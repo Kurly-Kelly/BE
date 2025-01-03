@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     // 상품 이름에 keyword 를 포함한 상품 검색- 대소문자 구분 안함
     List<Product> findByNameContainingIgnoreCase(String keyword);
+    List<Product> findByCategoryIgnoreCase(String category);
+
 
 
 }

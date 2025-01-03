@@ -40,4 +40,7 @@ public class CartItem {
     @OneToOne
     @JoinColumn
     OrderItem orderItem;
+
+    public void addCartItem(){
+    }
 }

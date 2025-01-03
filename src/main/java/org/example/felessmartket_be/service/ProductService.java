@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -68,5 +69,10 @@ public class ProductService {
         return "/uploads/" + uniqueFilename;
 
         //추후 MultipartFile 방식으로 전환
+    }
+
+    // 카테고리를 통한 상품 리스트 조회
+    public List<Product> getProductByCategory(String category){
+        return productRepository.findByCategoryIgnoreCase(category);
     }
 }
