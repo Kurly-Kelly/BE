@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
@@ -56,4 +57,13 @@ public class Member {
         this.phone = phoneNumber;
         this.email = email;
     }
+    @PrePersist
+    public void prePersist() {
+        if (this.cart == null) {
+            this.cart = new Cart();
+            this.cart.setMember(this);  // 회원에 연결된 장바구니 설정
+            this.cart.setCartItem(null);   // 기본 값 설정
+        }
+    }
 }
+

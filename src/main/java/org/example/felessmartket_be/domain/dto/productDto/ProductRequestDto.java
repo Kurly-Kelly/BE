@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.example.felessmartket_be.domain.Category;
 import org.example.felessmartket_be.domain.Product;
 import org.example.felessmartket_be.domain.ProductStatus;
 
@@ -21,7 +22,7 @@ public class ProductRequestDto {
     Integer quantity;
     ProductStatus productStatus;
 
-    String category;
+    Category category;
 
     @JsonProperty("image")
     String imgURL;

@@ -49,9 +49,13 @@ public class SecurityConfig {
             .requestMatchers("/users/**").permitAll()
             .requestMatchers("/users/email/**").permitAll()
             .requestMatchers("/users/id/**").permitAll()
-            .requestMatchers("/search/**").permitAll()
+            .requestMatchers("/**").permitAll()
             .requestMatchers("/product/**").permitAll()
+            .requestMatchers("/admin/saveProduct/**").permitAll()
             .requestMatchers("/product/save/**").permitAll()
+            .requestMatchers("/product/ChildrenCategory/**").permitAll()
+            .requestMatchers("/product/ParentCategory/**").permitAll()
+            .requestMatchers("/product/getProduct/**").permitAll()
             .requestMatchers(
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
