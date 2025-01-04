@@ -31,7 +31,7 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "memeber_id")
     Long id;
-    String userId;
+    String username;
     String name;
     String password;
     String phone;
@@ -50,8 +50,8 @@ public class Member {
     @OneToMany(mappedBy = "member")
     List<Orders> orderList;
 
-    public Member(String name, String password, String phoneNumber, String email) {
-        this.userId = name;
+    public Member(String username, String password, String phoneNumber, String email) {
+        this.username = username;
         this.password = password;
         this.phone = phoneNumber;
         this.email = email;

@@ -34,7 +34,7 @@ public class MemberService {
 
     public Member create(MemberRequestDto memberRequestDto) {
         Member newMember = new Member();
-        newMember.setUserId(memberRequestDto.getUserId());
+        newMember.setUsername(memberRequestDto.getUsername());
         newMember.setName(memberRequestDto.getName());
         newMember.setEmail(memberRequestDto.getEmail());
         newMember.setPhone(memberRequestDto.getPhone());
@@ -48,7 +48,7 @@ public class MemberService {
         return memberRepository.existsByEmail(email);
     }
     public boolean checkIdDuplicate(String userId) {
-        return memberRepository.existsByUserId(userId);
+        return memberRepository.existsByUsername(userId);
     }
 
     public void sendCodeToEmail(String toEmail) {

@@ -35,6 +35,8 @@ public class CartItem {
     @JoinColumn(name = "cart_id")
     Cart cart;
 
+    Integer quantity;
+
     @OneToOne
     @JoinColumn
     OrderItem orderItem;

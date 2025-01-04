@@ -34,12 +34,4 @@ public class Cart {
     @OneToMany(mappedBy = "cart")
     List<CartItem> cartItem;
 
-    Integer quantity;
-    Integer price;
-
-    public Cart(Member member, Integer quantity, Integer price) {
-        this.member = member;
-        this.quantity = quantity;
-        this.price = price;
-    }
 }
