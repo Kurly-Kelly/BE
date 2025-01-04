@@ -50,4 +50,5 @@ public class CartItem {
     public void addQuantity(Integer quantity){
         this.qauntity += quantity;
     }
+
 }

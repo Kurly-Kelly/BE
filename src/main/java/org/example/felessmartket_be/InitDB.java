@@ -45,10 +45,7 @@ public class InitDB {
 */
             for(int i = 1; i < 10; i++) {
                 Member member = userCreate( i + "abc", "1" + i, "1" + i, i + "a@naver.com" );
-                Cart cart = cartCreate(member, i, i);
-
                 em.persist(member);
-                em.persist(cart);
             }
 
             Category[] categories = Category.values();
@@ -68,10 +65,6 @@ public class InitDB {
 
         public static Member userCreate(String name, String password, String phoneNumber, String email) {
             return new Member(name, password, phoneNumber, email);
-        }
-
-        public static Cart cartCreate(Member member, Integer quantity, Integer price) {
-            return new Cart(member, quantity, price);
         }
 
         public static Product productCreate(String name, Integer price, String description, Integer quantity, String category, String imgURL){

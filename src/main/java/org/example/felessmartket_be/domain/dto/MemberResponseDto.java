@@ -11,7 +11,7 @@ import org.example.felessmartket_be.domain.Member;
 @NoArgsConstructor
 public class MemberResponseDto {
 
-    private String userId;
+    private String username;
     private String name;
     private String email;
     private String password;
@@ -19,7 +19,7 @@ public class MemberResponseDto {
 
     public static MemberResponseDto from(Member member) {
         return new MemberResponseDto(
-            member.getUserId(),
+            member.getUsername(),
             member.getName(),
             member.getEmail(),
             member.getPassword(),
