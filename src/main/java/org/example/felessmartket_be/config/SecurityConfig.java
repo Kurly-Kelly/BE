@@ -46,12 +46,17 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> auth
             .requestMatchers("/users/signup").permitAll()
+            .requestMatchers("/users/login").permitAll()
             .requestMatchers("/users/**").permitAll()
             .requestMatchers("/users/email/**").permitAll()
             .requestMatchers("/users/id/**").permitAll()
-            .requestMatchers("/search/**").permitAll()
+            .requestMatchers("/**").permitAll()
             .requestMatchers("/product/**").permitAll()
-            .requestMatchers("/cart/**").permitAll()
+            .requestMatchers("/admin/saveProduct/**").permitAll()
+            .requestMatchers("/product/save/**").permitAll()
+            .requestMatchers("/product/ChildrenCategory/**").permitAll()
+            .requestMatchers("/product/ParentCategory/**").permitAll()
+            .requestMatchers("/product/getProduct/**").permitAll()
             .requestMatchers(
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
