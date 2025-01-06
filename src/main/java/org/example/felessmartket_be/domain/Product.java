@@ -33,16 +33,17 @@ public class Product {
     @Enumerated(EnumType.STRING)
     ProductStatus productStatus;
 
-
-    String category;
+    @Column(name = "category")
+    @Enumerated(EnumType.STRING)
+    Category category;
     String imgURL; //추후 MultipartFile 방식으로 전환
 
-    public Product(String name, Integer price, String description, Integer quantity, String category, String imgURL){
-        this.name = name;
-        this.price = price;
-        this.description = description;
-        this.quantity = quantity;
-        this.category = category;
-        this.imgURL = imgURL;
-    }
+//    public Product(String name, Integer price, String description, Integer quantity, String category, String imgURL){
+//        this.name = name;
+//        this.price = price;
+//        this.description = description;
+//        this.quantity = quantity;
+//        this.category = category;
+//        this.imgURL = imgURL;
+//    }
 }

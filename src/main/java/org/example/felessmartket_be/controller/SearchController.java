@@ -16,14 +16,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class SearchController {
     private final SearchService searchService;
 
-    @GetMapping("")
-    public ResponseEntity<List<Product>> searchProduct(@RequestParam ("keyword") String keyword){
+    // 검색 초기 화면(추천 및 급상승 검색어 화면)
+//    @GetMapping("")
+//    public ResponseEntity<List<String>> searchPage() {
+//        List<String> recommendations = searchService.getRecommendations();
+//        return ResponseEntity.ok(recommendations);
+//    }
+
+    // 검색 결과 화면
+    @GetMapping("/results")
+    public ResponseEntity<List<Product>> searchProduct(@RequestParam("keyword") String keyword) {
         List<Product> products = searchService.searchProductByKeyword(keyword);
         return ResponseEntity.ok(products);
     }
 
+    // 자동완성 검색어
     @GetMapping("/suggestions")
-    public ResponseEntity<List<String>> searchSuggestion(@RequestParam(value = "keyword",required = false) String keyword) {
+    public ResponseEntity<List<String>> searchSuggestion(
+        @RequestParam(value = "keyword", required = false) String keyword) {
         List<String> suggestion = searchService.searchSuggestion(keyword);
         return ResponseEntity.ok(suggestion);
     }
