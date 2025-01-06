@@ -12,6 +12,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
     generate-ddl: true
+  jwt:
+    secret: ${JWT_SECRET_KEY}
   data:
     redis:
       mail:
