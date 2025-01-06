@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
+@Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Cart {
 
@@ -37,7 +39,7 @@ public class Cart {
     List<CartItem> cartItem;
 
     // 장바구니 생성
-    public Cart createCart(Member member) {
+    public static Cart createCart(Member member) {
         Cart cart = new Cart();
         cart.setMember(member);
         return cart;

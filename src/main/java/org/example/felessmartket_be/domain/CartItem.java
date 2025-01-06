@@ -13,12 +13,14 @@ import jakarta.persistence.OneToOne;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @Entity
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -37,18 +39,18 @@ public class CartItem {
     @JoinColumn(name = "cart_id")
     Cart cart;
 
-    Integer qauntity;
+    Integer quantity;
 
-    public CartItem createCartItem(Cart cart, Product product, Integer qauntity) {
+    public static CartItem createCartItem(Cart cart, Product product, Integer quantity) {
         CartItem cartItem = new CartItem();
         cartItem.setCart(cart);
         cartItem.setProduct(product);
-        cartItem.setQauntity(qauntity);
+        cartItem.setQuantity(quantity);
         return cartItem;
     }
 
     public void addQuantity(Integer quantity){
-        this.qauntity += quantity;
+        this.quantity += quantity;
     }
 
 }

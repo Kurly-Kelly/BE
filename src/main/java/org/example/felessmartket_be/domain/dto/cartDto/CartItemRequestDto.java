@@ -1,4 +1,4 @@
-package org.example.felessmartket_be.domain.dto;
+package org.example.felessmartket_be.domain.dto.cartDto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// 장바구니 추가 Dto
 @Getter
 @Setter
 @NoArgsConstructor
