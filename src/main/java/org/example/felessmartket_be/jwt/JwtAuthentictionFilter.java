@@ -22,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 
 public class JwtAuthentictionFilter extends OncePerRequestFilter {
+
     private final JWTUtil jwtUtil;
     private final MemberRepository memberRepository;
 
@@ -39,23 +40,32 @@ public class JwtAuthentictionFilter extends OncePerRequestFilter {
                 if (!jwtUtil.isExpired(token)) {
                     // 2-1) 토큰에서 username(로그인 식별자) 추출
                     String username = jwtUtil.getUsername(token);
+                    log.info("[JWT 검증 성공] username: {}", username);
 
                     // 2-2) DB에서 사용자 정보 조회
                     Member member = memberRepository.findByUsername(username).orElse(null);
                     if (member != null) {
+                        log.info("[사용자 조회 성공] username: {}", member.getUsername());
                         // 2-3) SecurityContext에 인증 정보 등록
                         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                             // principal (UserDetails 대체)
-                            User.withUsername(username).password(member.getPassword()).authorities("ROLE_USER").build(),
+                            //User.withUsername(username).password(member.getPassword()).authorities("ROLE_USER").build(),
+                            member,
                             null,
                             Collections.emptyList()
                         );
                         SecurityContextHolder.getContext().setAuthentication(auth);
-                        log.info("[인증 성공] username = {}", username);
+                        log.info("[SecurityContext 설정 완료] username: {}", username);
+                    } else {
+                        log.warn("[사용자 조회 실패] username: {}", username);
                     }
                 }
+            } catch (io.jsonwebtoken.MalformedJwtException e) {
+                log.error("[인증 실패] 잘못된 JWT 형식: {}", e.getMessage());
+            } catch (io.jsonwebtoken.ExpiredJwtException e) {
+                log.error("[인증 실패] JWT 토큰 만료: {}", e.getMessage());
             } catch (JwtException e) {
-                log.error("[인증 실패] 잘못된 토큰 사용: {}", e.getMessage());
+                log.error("[인증 실패] JWT 검증 오류: {}", e.getMessage());
             } catch (Exception e) {
                 log.error("[인증 실패] 에러 발생: {}", e.getMessage());
             }
@@ -67,8 +77,16 @@ public class JwtAuthentictionFilter extends OncePerRequestFilter {
 
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+        log.info("Authorization Header: {}", bearerToken);
+
+        if (bearerToken != null) {
+            // 중복된 "Bearer" 제거
+            while (bearerToken.startsWith("Bearer ")) {
+                bearerToken = bearerToken.substring(7).trim();
+            }
+
+            log.info("Extracted Token: {}", bearerToken);
+            return bearerToken;
         }
         return null;
     }

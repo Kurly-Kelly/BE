@@ -1,6 +1,7 @@
 package org.example.felessmartket_be.domain;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +24,6 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Cart {
@@ -36,7 +36,7 @@ public class Cart {
     @JoinColumn(name = "member_id")
     Member member;
 
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     List<CartItem> cartItem;
 
     // 장바구니 생성

@@ -1,5 +1,6 @@
 package org.example.felessmartket_be.service;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class ProductService {
 
     ProductRepository productRepository;

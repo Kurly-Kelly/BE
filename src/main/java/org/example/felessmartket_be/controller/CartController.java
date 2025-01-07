@@ -3,19 +3,21 @@ package org.example.felessmartket_be.controller;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import org.example.felessmartket_be.domain.Member;
 import org.example.felessmartket_be.domain.dto.cartDto.CartItemRequestDto;
 import org.example.felessmartket_be.domain.dto.cartDto.CartResponseDto;
 import org.example.felessmartket_be.service.CartService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/cart")
 public class CartController {
@@ -28,7 +30,17 @@ public class CartController {
         @RequestBody @Valid CartItemRequestDto cartItemRequestDto,
         Principal principal) {
 
-        String username = principal.getName();  // 현재 로그인한 사용자의 이메일 조회
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Unauthorized: Please log in to access the cart.");
+        }
+        // principal 에서 member 객체 가져옴
+        Member member = extractMemberFromPrincipal(principal);
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Unauthorized: Invalid user details.");
+        }
+
         Long cartItemId;
 
         try {
@@ -37,7 +49,7 @@ public class CartController {
             System.out.println("quantity: " + cartItemRequestDto.getQuantity());
             System.out.println("Principal name: " + principal.getName());
 
-            cartItemId = cartService.addCart(cartItemRequestDto, username);
+            cartItemId = cartService.addCart(cartItemRequestDto, member.getUsername());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -48,11 +60,23 @@ public class CartController {
     @GetMapping
     @ResponseBody
     public ResponseEntity<CartResponseDto> getCart(Principal principal) {
-        String username = principal.getName();
+        Member member = extractMemberFromPrincipal(principal);
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(null);
+        }
         // username 으로 사용자의 장바구니 정보를 조회하고, 이를 cartResponseDto 에 저장
-        CartResponseDto cartResponseDto = cartService.getCart(username);
+        CartResponseDto cartResponseDto = cartService.getCart(member.getUsername());
         return ResponseEntity.ok(cartResponseDto);
     }
 
-
+    private Member extractMemberFromPrincipal(Principal principal) {
+        if (principal instanceof UsernamePasswordAuthenticationToken) {
+            Object principalObj = ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+            if (principalObj instanceof Member) {
+                return (Member) principalObj;
+            }
+        }
+        return null;
+    }
 }

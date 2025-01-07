@@ -1,6 +1,7 @@
 package org.example.felessmartket_be.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
