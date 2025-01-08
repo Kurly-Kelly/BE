@@ -18,6 +18,18 @@ import org.example.felessmartket_be.repository.MemberRepository;
 import org.example.felessmartket_be.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
+/**
+ * 장바구니에 담기(addCart: cartItem 의 Id 반환)
+ * 1. 장바구니에 담을 상품 엔티티 조회
+ * 2. 회원 엔티티 조회
+ * 3. 장바구니 엔티티 조회
+ * 4. 회원에게 cart 존재 유무 확인
+ * 4-1. 카트 존재 o -> 패스
+ * 4-2. 카트 존재 x -> createCart
+ * 5. cart 에 cartItem 담기
+ * 5-1. 동일 cartItem 이 존재 o -> 기존 수량에서 추가 수량만큼 더하기
+ * 5-2. 동일 cartItem 이 존재 x -> cartItem 추가
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -26,20 +38,6 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
-
-    /**
-     * 장바구니에 담기
-     * 1. 장바구니에 담을 상품 엔티티 조회
-     * 2. 회원 엔티티 조회
-     * 3. 장바구니 엔티티 조회
-     * 4. 회원에게 cart 존재 유무 확인
-     * 4-1. 카트 존재 o -> 패스
-     * 4-2. 카트 존재 x -> createCart
-     * 5. cart 에 cartItem 담기
-     * 5-1. 동일 cartItem 이 존재 o -> 기존 수량에서 추가 수량만큼 더하기
-     * 5-2. 동일 cartItem 이 존재 x -> cartItem 추가
-     */
-    // addCart: cartItem의 Id 반환
     public Long addCart(CartItemRequestDto cartItemRequestDto, String username) {
 
         // 상품 조회: cartItem 이 된 상품을 productRepository 에서 상픔 Id 조회. 존재하지 않으면 에러처리
@@ -91,6 +89,7 @@ public class CartService {
         // 장바구니 아이템 DTO로 변환
         List<CartItemDto> cartItems = cart.getCartItem().stream()
             .map(cartItem -> new CartItemDto(
+                cartItem.getId(),
                 cartItem.getProduct().getId(),
                 cartItem.getProduct().getName(),
                 cartItem.getQuantity(),
@@ -107,4 +106,51 @@ public class CartService {
         // 총 가격 포함해 반환
         return new CartResponseDto(cart.getId(), cartItems, totalPrice);
     }
+
+    // 장바구니 수량 업데이트( + , -)
+    public void updateCartItemQuantity(Long cartItemId, int quantity, String username) {
+        if (quantity < 1) {
+            throw new IllegalArgumentException("수량은 1 이상이어야 합니다.");
+        }
+
+        Member member = memberRepository.findByUsername(username)
+            .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        Cart cart = cartRepository.findByMember_Username(member.getUsername());
+        if (cart == null) {
+            throw new EntityNotFoundException("장바구니가 존재하지 않습니다.");
+        }
+
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+            .orElseThrow(() -> new EntityNotFoundException("장바구니 아이템을 찾을 수 없습니다."));
+
+        if (!cartItem.getCart().getId().equals(cart.getId())) {
+            throw new SecurityException("해당 장바구니 아이템에 접근 권한이 없습니다.");
+        }
+
+        cartItem.setQuantity(quantity);
+        System.out.println("[DEBUG] 수량 업데이트 완료: " + quantity);
+    }
+
+    // 장바구니 삭제
+    public void deleteCartItem(Long cartItemId, String username) {
+        Member member = memberRepository.findByUsername(username)
+            .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        Cart cart = cartRepository.findByMember_Username(member.getUsername());
+        if (cart == null) {
+            throw new EntityNotFoundException("장바구니가 존재하지 않습니다.");
+        }
+
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+            .orElseThrow(() -> new EntityNotFoundException("장바구니 아이템을 찾을 수 없습니다."));
+
+        if (!cartItem.getCart().getId().equals(cart.getId())) {
+            throw new SecurityException("해당 장바구니 아이템에 접근 권한이 없습니다.");
+        }
+
+        cartItemRepository.delete(cartItem);
+        System.out.println("[DEBUG] 장바구니 아이템 삭제 완료: " + cartItemId);
+    }
+
 }

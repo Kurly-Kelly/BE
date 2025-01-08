@@ -10,10 +10,13 @@ import org.example.felessmartket_be.service.CartService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -70,6 +73,48 @@ public class CartController {
         return ResponseEntity.ok(cartResponseDto);
     }
 
+    // 장바구니 수량 업데이트
+    @PostMapping("/update")
+    public ResponseEntity<?> updateCartItemQuantity(
+        @RequestParam Long cartItemId,
+        @RequestParam int quantity,
+        Principal principal) {
+        Member member = extractMemberFromPrincipal(principal);
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized.");
+        }
+
+        try {
+            cartService.updateCartItemQuantity(cartItemId, quantity, member.getUsername());
+            return ResponseEntity.ok("수량이 업데이트되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    // 장바구니 삭제
+
+    @DeleteMapping("/item/{cartItemId}")
+    public ResponseEntity<?> deleteCartItem(
+        @PathVariable Long cartItemId,
+        Principal principal) {
+        Member member = extractMemberFromPrincipal(principal);
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized.");
+        }
+
+        try {
+            cartService.deleteCartItem(cartItemId, member.getUsername());
+            return ResponseEntity.ok("장바구니 아이템이 삭제되었습니다.");
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+
+
     private Member extractMemberFromPrincipal(Principal principal) {
         if (principal instanceof UsernamePasswordAuthenticationToken) {
             Object principalObj = ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
@@ -79,4 +124,6 @@ public class CartController {
         }
         return null;
     }
+
+
 }
