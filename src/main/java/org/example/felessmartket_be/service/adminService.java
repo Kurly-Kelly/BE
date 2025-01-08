@@ -1,5 +1,6 @@
 package org.example.felessmartket_be.service;
 
+import jakarta.transaction.Transactional;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
