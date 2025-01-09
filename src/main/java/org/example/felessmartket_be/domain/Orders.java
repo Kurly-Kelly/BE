@@ -12,19 +12,26 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Setter
+@Getter
 public class Orders {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     Long id;
+
+    @Column(name = "toss_order_id")
+    String tossOrderId;
 
     @OneToOne
     @JoinColumn(name = "shipping_id")
@@ -40,7 +47,7 @@ public class Orders {
 
     Integer totalPrice;
 
-    @Enumerated(EnumType.STRING)
-    OrderStatus orderStatus;
+//    @Enumerated(EnumType.STRING)
+    String orderStatus;
 
 }
