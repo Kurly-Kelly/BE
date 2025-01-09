@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import lombok.RequiredArgsConstructor;
+import org.example.felessmartket_be.jwt.JwtAuthentictionFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,6 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final JwtAuthentictionFilter jwtAuthentictionFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,35 +41,51 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // CORS 설정
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
+        // CSRF, HTTP 기본 인증, 폼 로그인 비활성화
         http.csrf(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.formLogin(AbstractHttpConfigurer::disable);
 
+        // URL별 접근 권한 설정
         http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("/users/signup").permitAll()
-            .requestMatchers("/users/**").permitAll()
-            .requestMatchers("/users/email/**").permitAll()
-            .requestMatchers("/users/id/**").permitAll()
-            .requestMatchers("/search/**").permitAll()
+            // 회원가입 및 로그인 API는 모두 접근 가능
+            .requestMatchers("/users/signup", "/users/login", "/users/**").permitAll()
+            .requestMatchers("/users/email/**", "/users/id/**").permitAll()
+
+            // 상품 관련 API는 모두 접근 가능
             .requestMatchers("/product/**").permitAll()
-            .requestMatchers("/product/save/**").permitAll()
-            .requestMatchers("/payments/**").permitAll()
-            .requestMatchers("/payments").permitAll()
+            .requestMatchers("/admin/saveProduct/**").permitAll()
+//            .requestMatchers("/product/save/**").permitAll()
+//            .requestMatchers("/product/ChildrenCategory/**").permitAll()
+//            .requestMatchers("/product/ParentCategory/**").permitAll()
+//            .requestMatchers("/product/getProduct/**").permitAll()
+            .requestMatchers("/search/**").permitAll()
+
+
+            // Swagger 문서 접근 가능
             .requestMatchers(
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
                 "/v3/api-docs.yaml",
-                "/v3/api-docs/**",
                 "/v3/api-docs/swagger-config"
             ).permitAll()
+
+            // `/cart` 경로는 인증된 사용자만 접근 가능
+            .requestMatchers("/cart/**").authenticated()
+
+            // 그 외 모든 요청은 인증 필요
             .anyRequest().authenticated()
         );
 
         // 세션 상태를 STATELESS로 설정 (JWT 사용 시 필수)
         http.sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        // JWT 필터 추가 (UsernamePasswordAuthenticationFilter 이전)
+        http.addFilterBefore(jwtAuthentictionFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

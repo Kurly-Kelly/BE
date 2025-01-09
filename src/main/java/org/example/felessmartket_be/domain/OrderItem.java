@@ -22,11 +22,13 @@ public class OrderItem {
     @Column(name = "orderItem_id")
     Long id;
 
-    @OneToOne
-    @JoinColumn(name = "cartItem_id")
-    CartItem cartItem;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    Product product;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
     Orders order;
+
+
 }
