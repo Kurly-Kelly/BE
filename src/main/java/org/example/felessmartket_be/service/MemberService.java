@@ -37,7 +37,7 @@ public class MemberService {
 
     public Member create(MemberRequestDto memberRequestDto) {
         Member newMember = new Member();
-        newMember.setUsername(memberRequestDto.getUsername());
+        newMember.setUsername(memberRequestDto.getUserName());
         newMember.setName(memberRequestDto.getName());
         newMember.setEmail(memberRequestDto.getEmail());
         newMember.setPhone(memberRequestDto.getPhone());
