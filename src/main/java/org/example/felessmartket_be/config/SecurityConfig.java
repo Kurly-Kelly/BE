@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import lombok.RequiredArgsConstructor;
-import org.example.felessmartket_be.jwt.JwtAuthentictionFilter;
+import org.example.felessmartket_be.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final JwtAuthentictionFilter jwtAuthentictionFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -52,7 +52,7 @@ public class SecurityConfig {
         // URL별 접근 권한 설정
         http.authorizeHttpRequests(auth -> auth
             // 회원가입 및 로그인 API는 모두 접근 가능
-            .requestMatchers("/users/signup", "/users/login", "/users/**").permitAll()
+            .requestMatchers("/users/signup", "/users/login").permitAll()
             .requestMatchers("/users/email/**", "/users/id/**").permitAll()
 
             // 상품 관련 API는 모두 접근 가능
@@ -73,8 +73,8 @@ public class SecurityConfig {
                 "/v3/api-docs/swagger-config"
             ).permitAll()
 
-            // `/cart` 경로는 인증된 사용자만 접근 가능
-            .requestMatchers("/cart/**").authenticated()
+            // 인증이 필요한 URL 설정
+            .requestMatchers("/cart/**", "/users/me").authenticated()
 
             // 그 외 모든 요청은 인증 필요
             .anyRequest().authenticated()
@@ -85,7 +85,7 @@ public class SecurityConfig {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // JWT 필터 추가 (UsernamePasswordAuthenticationFilter 이전)
-        http.addFilterBefore(jwtAuthentictionFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -107,7 +107,7 @@ public class SecurityConfig {
         corsConfiguration.setAllowCredentials(true);
 
         // 노출할 헤더
-        corsConfiguration.setExposedHeaders(Arrays.asList("Authorization"));
+        corsConfiguration.setExposedHeaders(Arrays.asList("Authorization", "Refresh-Token"));
 
         // 캐싱 시간
         corsConfiguration.setMaxAge(3600L);
