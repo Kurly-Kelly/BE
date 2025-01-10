@@ -52,6 +52,11 @@ public class ProductService {
 
     }
 
+    public List<ProductResponseDto> findTop5ByOrderByPriceDesc() {
+        List<Product> products = productRepository.findTop5ByOrderByPriceDesc();
+        return products.stream().map(ProductResponseDto::of).toList();
+    }
+
 
 // 카테고리를 통한 상품 리스트 조회
 //    public List<Product> getProductByCategory(Category category) {
