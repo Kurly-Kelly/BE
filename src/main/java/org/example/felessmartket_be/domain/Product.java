@@ -33,9 +33,14 @@ public class Product {
     @Enumerated(EnumType.STRING)
     ProductStatus productStatus;
 
-    @Column(name = "category")
     @Enumerated(EnumType.STRING)
-    Category category;
+    @Column(nullable = false)
+    private MainCategory mainCategory; // 대분류
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SubCategory subCategory; // 소분류
+
     String imgURL; //추후 MultipartFile 방식으로 전환
 
 }

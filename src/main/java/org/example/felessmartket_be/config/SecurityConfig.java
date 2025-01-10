@@ -57,6 +57,7 @@ public class SecurityConfig {
 
             // 상품 관련 API는 모두 접근 가능
             .requestMatchers("/product/**").permitAll()
+            .requestMatchers("/category/**").permitAll()
             .requestMatchers("/admin/saveProduct/**").permitAll()
 //            .requestMatchers("/product/save/**").permitAll()
 //            .requestMatchers("/product/ChildrenCategory/**").permitAll()

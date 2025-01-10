@@ -7,9 +7,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.example.felessmartket_be.domain.Category;
+import org.example.felessmartket_be.domain.MainCategory;
 import org.example.felessmartket_be.domain.Product;
 import org.example.felessmartket_be.domain.ProductStatus;
+import org.example.felessmartket_be.domain.SubCategory;
 
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -24,21 +25,23 @@ public class ProductResponseDto {
     Integer price;
     Integer quantity;
     ProductStatus productStatus;
-    Category category;
+    MainCategory mainCategory;
+    SubCategory subCategory;
     @JsonProperty("image")
     String imgURL;
 
 
-    public static ProductResponseDto of(Product product) {
-        return new ProductResponseDto(
-            product.getId(),
-            product.getName(),
-            product.getDescription(),
-            product.getPrice(),
-            product.getQuantity(),
-            product.getProductStatus(),
-            product.getCategory(),
-            product.getImgURL()
-        );
+    public static ProductResponseDto fromEntity(Product product) {
+        return ProductResponseDto.builder()
+            .id(product.getId())
+            .name(product.getName())
+            .description(product.getDescription())
+            .price(product.getPrice())
+            .quantity(product.getQuantity())
+            .productStatus(product.getProductStatus())
+            .mainCategory(product.getMainCategory())
+            .subCategory(product.getSubCategory())
+            .imgURL(product.getImgURL())
+            .build();
     }
 }
