@@ -70,11 +70,17 @@ public class MemberService {
 
         // 4) Refresh Token -> Redis에 저장
         // Key는 "RT: " + username, 만료시간은 7일
+        String redisKey = "RT: " + username;
+
         redisService.setValues(
-            "RT: " + username,
+            redisKey,
             refreshToken,
             Duration.ofMillis(refreshExpiredMs)
         );
+
+        // redis 저장 값 로그 출력
+        String savedValue = redisService.getValues(redisKey);
+        System.out.println("Redis 저장 확인 - " + redisKey + ", Value: " + savedValue);
 
         // 5) 로그인 응답 생성
         return new LoginResponseDto(
