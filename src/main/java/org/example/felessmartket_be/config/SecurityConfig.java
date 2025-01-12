@@ -52,7 +52,7 @@ public class SecurityConfig {
         // URL별 접근 권한 설정
         http.authorizeHttpRequests(auth -> auth
             // 회원가입 및 로그인 API는 모두 접근 가능
-            .requestMatchers("/users/signup", "/users/login").permitAll()
+            .requestMatchers("/users/signup", "/users/login", "/users/logout").permitAll()
             .requestMatchers("/users/email/**", "/users/id/**").permitAll()
 
             // 상품 관련 API는 모두 접근 가능
@@ -86,7 +86,6 @@ public class SecurityConfig {
 
         // JWT 필터 추가 (UsernamePasswordAuthenticationFilter 이전)
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
