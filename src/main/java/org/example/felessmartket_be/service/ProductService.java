@@ -6,8 +6,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.example.felessmartket_be.domain.Category;
+import org.example.felessmartket_be.domain.MainCategory;
 import org.example.felessmartket_be.domain.Product;
+import org.example.felessmartket_be.domain.SubCategory;
 import org.example.felessmartket_be.domain.dto.productDto.ProductResponseDto;
 import org.example.felessmartket_be.exception.CustomException;
 import org.example.felessmartket_be.exception.ExceptionType;
@@ -23,38 +24,33 @@ public class ProductService {
 
     ProductRepository productRepository;
 
+    // 특정 상품 상세 조회
     public ProductResponseDto getProduct(Long id) {
         Product product = productRepository.findById(id)
-            .orElseThrow(() -> new CustomException(ExceptionType.NOT_FIND_PRODUCT));
-
-        return ProductResponseDto.builder()
-            .id(product.getId())
-            .name(product.getName())
-            .description(product.getDescription())
-            .price(product.getPrice())
-            .quantity(product.getQuantity())
-            .productStatus(product.getProductStatus())
-            .category(product.getCategory())
-            .imgURL(product.getImgURL())
-            .build();
+            .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + id));
+        return ProductResponseDto.fromEntity(product);
     }
 
-    public List<ProductResponseDto> getProductsByParentCategory(Category parentCategory) {
-        List<Category> childCategories = Category.getChildCategories(parentCategory);
-        List<Product> products = productRepository.findByParentCategory(childCategories);
-        return products.stream().map(ProductResponseDto::of).toList();
+    // MainCategory로 상품 목록 조회
+    public List<ProductResponseDto> getProductsByMainCategory(MainCategory mainCategory) {
+        List<Product> products = productRepository.findByMainCategory(mainCategory);
+        if (products.isEmpty()) {
+            throw new IllegalArgumentException("main category 에서 상품을 찾을 수 없습니다: " + mainCategory);
+        }
+        return products.stream()
+            .map(ProductResponseDto::fromEntity)
+            .toList();
     }
 
-
-    public List<ProductResponseDto> getProductFindByCategory(Category parentCategory) {
-        List<Product> childCategories = productRepository.findByCategory(parentCategory);
-        return childCategories.stream().map(ProductResponseDto::of).toList();
-
+    // MainCategory와 SubCategory로 상품 목록 조회
+    public List<ProductResponseDto> getProductsByMainAndSubCategory(MainCategory mainCategory, SubCategory subCategory) {
+        List<Product> products = productRepository.findByMainCategoryAndSubCategory(mainCategory, subCategory);
+        if (products.isEmpty()) {
+            throw new IllegalArgumentException("main category를 찾을 수 없습니다: " + mainCategory + " sub category 를 찾을 수 없습니다:" + subCategory);
+        }
+        return products.stream()
+            .map(ProductResponseDto::fromEntity)
+            .toList();
     }
-
-
-// 카테고리를 통한 상품 리스트 조회
-//    public List<Product> getProductByCategory(Category category) {
-//        return productRepository.findByCategoryIgnoreCase(category);
-//    }
 }
+

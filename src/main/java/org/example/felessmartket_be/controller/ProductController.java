@@ -4,56 +4,46 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.example.felessmartket_be.domain.Category;
-import org.example.felessmartket_be.domain.Product;
-import org.example.felessmartket_be.domain.dto.productDto.ProductRequestDto;
+import org.example.felessmartket_be.domain.MainCategory;
+import org.example.felessmartket_be.domain.SubCategory;
 import org.example.felessmartket_be.domain.dto.productDto.ProductResponseDto;
 import org.example.felessmartket_be.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@RequestMapping("product")
+@RequestMapping("/product")
 @RestController
 public class ProductController {
 
     ProductService productService;
 
-    @PostMapping("/getProduct/{id}")
+    // 특정 상품 상세 조회
+    @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDto> getProduct(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProduct(id));
+        ProductResponseDto product = productService.getProduct(id);
+        return ResponseEntity.ok(product);
     }
 
-    @GetMapping("/ParentCategory/{parentCategory}")
-    public ResponseEntity<List<ProductResponseDto>> getProductsByParentCategory(
-        @PathVariable Category parentCategory) {
-        List<ProductResponseDto> products = productService.getProductsByParentCategory(
-            parentCategory);
+    // MainCategory로 상품 목록 조회
+    @GetMapping("/main-category/{mainCategory}")
+    public ResponseEntity<List<ProductResponseDto>> getProductsByMainCategory(
+        @PathVariable MainCategory mainCategory) {
+        List<ProductResponseDto> products = productService.getProductsByMainCategory(mainCategory);
         return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/ChildrenCategory/{ChildrenCategory}")
-    public ResponseEntity<List<ProductResponseDto>> getFindByCategory(
-        @PathVariable Category ChildrenCategory) {
-        List<ProductResponseDto> products = productService.getProductFindByCategory(
-            ChildrenCategory);
+    // MainCategory와 SubCategory로 상품 목록 조회
+    @GetMapping("/category/{mainCategory}/{subCategory}")
+    public ResponseEntity<List<ProductResponseDto>> getProductsByMainAndSubCategory(
+        @PathVariable MainCategory mainCategory,
+        @PathVariable SubCategory subCategory) {
+        List<ProductResponseDto> products = productService.getProductsByMainAndSubCategory(mainCategory, subCategory);
         return ResponseEntity.ok(products);
     }
-
-
-//    @GetMapping("/productList")
-//    public ResponseEntity<List<Product>> getProductByCategory(
-//        @RequestParam(value = "category") Category category) {
-//        List<Product> products = productService.getProductByCategory(category);
-//        return ResponseEntity.ok(products);
-//    }
-
-
 }
+

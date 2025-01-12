@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,10 @@ public class Shipping {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "shipping_id")
     Integer id;
+
+    @OneToOne(mappedBy = "shipping")
+    Orders order;
+
     String addressLine; //주소
     String postalCode; //우편번호
     String country; //나라

@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.felessmartket_be.domain.Category;
+import org.example.felessmartket_be.domain.MainCategory;
 import org.example.felessmartket_be.domain.Product;
 import org.example.felessmartket_be.domain.ProductStatus;
+import org.example.felessmartket_be.domain.SubCategory;
 
 @Data
 @AllArgsConstructor
@@ -19,7 +20,8 @@ public class SearchResponseDto {
     Integer price;
     Integer quantity;
     ProductStatus productStatus;
-    Category category;
+    MainCategory mainCategory;
+    SubCategory subCategory;
     String imgURL;
 
     public static SearchResponseDto from(Product product) {
@@ -30,7 +32,8 @@ public class SearchResponseDto {
             product.getPrice(),
             product.getQuantity(),
             product.getProductStatus(),
-            product.getCategory(),
+            product.getMainCategory(),
+            product.getSubCategory(),
             product.getImgURL()
         );
     }

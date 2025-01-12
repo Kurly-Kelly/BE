@@ -6,9 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.example.felessmartket_be.domain.Category;
+import org.example.felessmartket_be.domain.MainCategory;
 import org.example.felessmartket_be.domain.Product;
 import org.example.felessmartket_be.domain.ProductStatus;
+import org.example.felessmartket_be.domain.SubCategory;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Setter
@@ -22,11 +23,11 @@ public class ProductRequestDto {
     Integer quantity;
     ProductStatus productStatus;
 
-    Category category;
+    MainCategory mainCategory;
+    SubCategory subCategory;
 
     @JsonProperty("image")
     String imgURL;
-
 
     public static Product of(ProductRequestDto productRequestDto) {
         return new Product(
@@ -35,8 +36,9 @@ public class ProductRequestDto {
             productRequestDto.getDescription(),
             productRequestDto.getPrice(),
             productRequestDto.getQuantity(),
-            ProductStatus.available,
-            productRequestDto.getCategory(),
+            productRequestDto.getProductStatus(),
+            productRequestDto.getMainCategory(),
+            productRequestDto.getSubCategory(),
             productRequestDto.getImgURL()
         );
     }
