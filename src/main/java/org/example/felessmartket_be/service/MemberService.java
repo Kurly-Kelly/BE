@@ -95,7 +95,7 @@ public class MemberService {
         );
     }
 
-    public LogoutResponseDto logout(String username) {
+    public LogoutResponseDto logout(String username, String token) {
         try {
             // Redis에서 Refresh Token 제거
             String refreshTokenKey = "RT: " + username;
@@ -110,18 +110,27 @@ public class MemberService {
             log.info("Refresh Token 삭제 완료: {}", username);
 
             // Access Token 블랙리스트 처리
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null) {
-                String accessToken = extractAccessToken(authentication);
-                if (accessToken != null) {
-                    redisService.setValues(
-                        "BL: " + accessToken,
-                        "true",
-                        Duration.ofMinutes(30)
-                    );
-                    log.info("Access Token Blacklist 추가 완료: {}", username);
-                }
+//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//            if (authentication != null) {
+//                String accessToken = extractAccessToken(authentication);
+//                if (accessToken != null) {
+//                    redisService.setValues(
+//                        "BL: " + accessToken,
+//                        "true",
+//                        Duration.ofMinutes(30)
+//                    );
+//                    log.info("Access Token Blacklist 추가 완료: {}", username);
+//                }
+//            }
+            if (token != null) {
+                redisService.setValues(
+                    "BL: " + token,
+                    "true",
+                    Duration.ofMinutes(30)
+                );
+                log.info("Access Token Blacklist 추가 완료: {}", username);
             }
+
             return LogoutResponseDto.success();
         } catch (Exception e) {
             log.error("로그아웃 처리 중 에러 발생: {}", e.getMessage());

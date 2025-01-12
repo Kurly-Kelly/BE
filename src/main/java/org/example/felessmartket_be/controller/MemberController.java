@@ -156,7 +156,7 @@ public class MemberController {
         }
 
         Member member = (Member) authentication.getPrincipal();
-        LogoutResponseDto responseDto = memberService.logout(member.getUsername());
+        LogoutResponseDto responseDto = memberService.logout(member.getUsername(), token);
 
         if (responseDto.isSuccess()) {
             SecurityContextHolder.clearContext();
