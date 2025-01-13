@@ -10,10 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.felessmartket_be.domain.Member;
 import org.example.felessmartket_be.domain.dto.EmailVerificationResult;
 import org.example.felessmartket_be.domain.dto.LoginResponseDto;
+import org.example.felessmartket_be.domain.dto.LogoutResponseDto;
 import org.example.felessmartket_be.domain.dto.MemberRequestDto;
 import org.example.felessmartket_be.jwt.JWTUtil;
 import org.example.felessmartket_be.repository.MemberRepository;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +70,7 @@ public class MemberService {
         String accessToken = jwtUtil.createAccessToken(username, "ROLE_USER", accessExpiredMs);
         String refreshToken = jwtUtil.createRefreshToken(username, "ROLE_USER", refreshExpiredMs);
 
+      //  redisService.deleteValues("BL: " + accessToken);
 
         // 4) Refresh Token -> Redis에 저장
         // Key는 "RT: " + username, 만료시간은 7일
@@ -89,6 +93,57 @@ public class MemberService {
             refreshToken,
             "로그인 성공"
         );
+    }
+
+    public LogoutResponseDto logout(String username, String token) {
+        try {
+            // Redis에서 Refresh Token 제거
+            String refreshTokenKey = "RT: " + username;
+            String refreshToken = redisService.getValues(refreshTokenKey);
+
+            if (refreshToken == null) {
+                return LogoutResponseDto.fail("이미 로그아웃된 사용자입니다.");
+            }
+
+            // Refresh Token 삭제
+            redisService.deleteValues(refreshTokenKey);
+            log.info("Refresh Token 삭제 완료: {}", username);
+
+            // Access Token 블랙리스트 처리
+//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//            if (authentication != null) {
+//                String accessToken = extractAccessToken(authentication);
+//                if (accessToken != null) {
+//                    redisService.setValues(
+//                        "BL: " + accessToken,
+//                        "true",
+//                        Duration.ofMinutes(30)
+//                    );
+//                    log.info("Access Token Blacklist 추가 완료: {}", username);
+//                }
+//            }
+            if (token != null) {
+                redisService.setValues(
+                    "BL: " + token,
+                    "true",
+                    Duration.ofMinutes(30)
+                );
+                log.info("Access Token Blacklist 추가 완료: {}", username);
+            }
+
+            return LogoutResponseDto.success();
+        } catch (Exception e) {
+            log.error("로그아웃 처리 중 에러 발생: {}", e.getMessage());
+            return  LogoutResponseDto.fail("로그아웃 처리 중 오류가 발생했습니다.");
+        }
+    }
+
+    private String extractAccessToken(Authentication authentication) {
+        String credentials = (String) authentication.getCredentials();
+        if (credentials != null && credentials.startsWith("Bearer ")) {
+            return credentials.substring(7);
+        }
+        return null;
     }
 
     public boolean checkEmailDuplicate(String email) {
