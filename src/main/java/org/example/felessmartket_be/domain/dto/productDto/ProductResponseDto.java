@@ -1,6 +1,7 @@
 package org.example.felessmartket_be.domain.dto.productDto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,8 +28,7 @@ public class ProductResponseDto {
     ProductStatus productStatus;
     MainCategory mainCategory;
     SubCategory subCategory;
-    @JsonProperty("image")
-    String imgURL;
+    List<String> imageUrl; // 여러 이미지 URL 저장 가능
 
 
     public static ProductResponseDto fromEntity(Product product) {
@@ -41,7 +41,7 @@ public class ProductResponseDto {
             .productStatus(product.getProductStatus())
             .mainCategory(product.getMainCategory())
             .subCategory(product.getSubCategory())
-            .imgURL(product.getImgURL())
+            .imageUrl(product.getImageUrls())
             .build();
     }
 }

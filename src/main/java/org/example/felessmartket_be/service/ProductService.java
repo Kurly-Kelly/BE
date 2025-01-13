@@ -26,8 +26,10 @@ public class ProductService {
 
     // 특정 상품 상세 조회
     public ProductResponseDto getProduct(Long id) {
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findByIdWithImages(id)
             .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + id));
+
+
         return ProductResponseDto.fromEntity(product);
     }
 
