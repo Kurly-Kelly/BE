@@ -36,18 +36,15 @@ public class ProductController {
 
     // MainCategory로 상품 목록 조회
     @GetMapping("/main-category/{mainCategory}")
-    public ResponseEntity<List<ProductResponseDto>> getProductsByMainCategory(
-        @PathVariable MainCategory mainCategory) {
+    public ResponseEntity<List<ProductResponseDto>> getProductsByMainCategory(@PathVariable MainCategory mainCategory) {
         List<ProductResponseDto> products = productService.getProductsByMainCategory(mainCategory);
         return ResponseEntity.ok(products);
     }
 
     // MainCategory와 SubCategory로 상품 목록 조회
-    @GetMapping("/category/{mainCategory}/{subCategory}")
-    public ResponseEntity<List<ProductResponseDto>> getProductsByMainAndSubCategory(
-        @PathVariable MainCategory mainCategory,
-        @PathVariable SubCategory subCategory) {
-        List<ProductResponseDto> products = productService.getProductsByMainAndSubCategory(mainCategory, subCategory);
+    @GetMapping("/category/{subCategory}")
+    public ResponseEntity<List<ProductResponseDto>> getProductsByMainAndSubCategory(@PathVariable SubCategory subCategory) {
+        List<ProductResponseDto> products = productService.getProductsBySubCategory(subCategory);
         return ResponseEntity.ok(products);
     }
 
