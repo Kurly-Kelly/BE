@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequestMapping("/admin")
 @RestController
-public class adminController {
+public class AdminController {
 
     AdminService adminService;
 
