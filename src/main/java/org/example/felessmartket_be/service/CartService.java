@@ -82,8 +82,9 @@ public class CartService {
 
         // 장바구니 조회
         Cart cart = cartRepository.findByMember_Username(member.getUsername());
+        // 장바구니가 없으면 빈 장바구니 생성 및 반환
         if (cart == null) {
-            throw new EntityNotFoundException("회원의 장바구니가 존재하지 않습니다.");
+            return new CartResponseDto(null, List.of(), 0L);
         }
 
         // 장바구니 아이템 DTO로 변환
