@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import lombok.RequiredArgsConstructor;
 import org.example.felessmartket_be.jwt.JwtAuthenticationFilter;
+import org.example.felessmartket_be.service.KakaoLoginService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -24,10 +26,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class  SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+//    private final DefaultOAuth2UserService oAuth2UserService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,6 +41,11 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
+//    @Bean
+//    public DefaultOAuth2UserService defaultOAuth2UserService() {
+//        return new DefaultOAuth2UserService();
+//    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -74,6 +82,9 @@ public class SecurityConfig {
                 "/v3/api-docs/swagger-config"
             ).permitAll()
 
+                // OAuth 콜백 URL 허용
+                .requestMatchers("/callback/kakao").permitAll()
+
             // 인증이 필요한 URL 설정
             .requestMatchers("/cart/**", "/users/me").authenticated()
 
@@ -81,9 +92,30 @@ public class SecurityConfig {
             .anyRequest().authenticated()
         );
 
+            // OAuth2 로그인 추가
+            http.oauth2Login(oauth2 -> oauth2
+ //                   .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
+
+                    .userInfoEndpoint(endpoint -> endpoint.userService(new DefaultOAuth2UserService()))
+//                    .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
+//                    .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
+                     //로그인 성공 시 이동할 기본 URL
+                    .defaultSuccessUrl("/login/oauth2/code/kakao")
+                    // 로그인 실패 시 이동할 URL 설정
+                    .failureUrl("/loginFailure")
+                // 필요 시 사용자 정의 OAuth2UserService 설정 가능
+                // .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+
+        );
+
         // 세션 상태를 STATELESS로 설정 (JWT 사용 시 필수)
-        http.sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//        http.sessionManagement(session -> session
+//            .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        // 세션 상태를 IF_REQUIRED로 설정 (OAuth2 로그인 시 세션 필요)
+        http.sessionManagement(session ->
+            session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+
 
         // JWT 필터 추가 (UsernamePasswordAuthenticationFilter 이전)
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

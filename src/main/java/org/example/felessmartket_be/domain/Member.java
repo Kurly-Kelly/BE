@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +25,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
+@Builder
 public class Member {
 
     @Id
@@ -42,6 +44,10 @@ public class Member {
     LocalDateTime created_at;
     LocalDateTime updated_at;
     LocalDateTime deleted_at;
+
+    // OAuth 관련 필드
+    private String provider;    // 예: "kakao"
+    private String providerId;  // 카카오에서 제공하는 고유 사용자 ID
 
     @OneToOne(mappedBy = "member", optional = false)
     Cart cart;

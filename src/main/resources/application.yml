@@ -34,3 +34,26 @@ spring:
           timeout: 5000
           write-timeout: 5000
         auth-code-expiration-millis: 1800000  # 30 * 60 * 1000 == 30분
+
+#Kakao OAuth 설정
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: 1139ffacfb149314a60e7fd21f25256f
+            client-secret: MzcmtZwdhyoIa5pGnOvwPEsl88pUehbq
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://localhost:8080/login/oauth2/code/kakao"
+            scope:
+              - profile_nickname
+            client-authentication-method: client_secret_post
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize   # 권한을 확인하는 uri
+            token-uri: https://kauth.kakao.com/oauth/token	      # 토큰을 새로 갱신 받을 때 사용하는 uri
+            user-info-uri: https://kapi.kakao.com/v2/user/me    # user 의 정보를 oauth 서버로부터 불러오는 uri
+            user-name-attribute: id
+
+
+
