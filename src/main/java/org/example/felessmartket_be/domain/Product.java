@@ -48,6 +48,7 @@ public class Product {
 
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 1000) // 길이를 1000으로 설정
     private List<String> imageUrls = new ArrayList<>();
+
 }
