@@ -2,6 +2,8 @@ package org.example.felessmartket_be.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,10 +37,12 @@ public class Member {
     String password;
     String phone;
 
+    @Enumerated(EnumType.STRING)
+    MemberStatus status = MemberStatus.ACTIVE; // 기본값 ACTIVE
+
     @Column(unique = true)
     String email;
     String address;
-    String userStatus; // enum
     LocalDateTime created_at;
     LocalDateTime updated_at;
     LocalDateTime deleted_at;
