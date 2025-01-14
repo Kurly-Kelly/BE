@@ -43,14 +43,24 @@ public class ProductService {
     }
 
     // MainCategory와 SubCategory로 상품 목록 조회
-    public List<ProductResponseDto> getProductsByMainAndSubCategory(MainCategory mainCategory, SubCategory subCategory) {
-        List<Product> products = productRepository.findByMainCategoryAndSubCategory(mainCategory, subCategory);
+    public List<ProductResponseDto> getProductsBySubCategory(SubCategory subCategory) {
+        List<Product> products = productRepository.findBySubCategory(subCategory);
         if (products.isEmpty()) {
-            throw new IllegalArgumentException("main category를 찾을 수 없습니다: " + mainCategory + " sub category 를 찾을 수 없습니다:" + subCategory);
+            throw new IllegalArgumentException("sub category 를 찾을 수 없습니다:" + subCategory);
         }
         return products.stream()
             .map(ProductResponseDto::fromEntity)
             .toList();
     }
-}
 
+    public List<ProductResponseDto> findTop5ByOrderByPriceDesc() {
+        List<Product> products = productRepository.findTop5ByOrderByPriceDesc();
+        return products.stream().map(ProductResponseDto::fromEntity).toList();
+    }
+
+
+// 카테고리를 통한 상품 리스트 조회
+//    public List<Product> getProductByCategory(Category category) {
+//        return productRepository.findByCategoryIgnoreCase(category);
+//    }
+}
