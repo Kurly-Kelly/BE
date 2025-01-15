@@ -201,6 +201,7 @@ public class MemberController {
         }
     }
 
+    // [아이디 찾기] 인증번호 발송
     @PostMapping("/find-id/send-code")
     public ResponseEntity<?> sendFindIdCode(@RequestParam String name, @RequestParam String email) {
         try {
@@ -211,13 +212,19 @@ public class MemberController {
         }
     }
 
+    // [아이디 찾기] 인증번호 확인 후, 아이디 반환
+    @PostMapping("/find-id/verify-code")
     public ResponseEntity<?> verifyFindIdCode(@RequestParam String name, @RequestParam String email, @RequestParam String code) {
-        boolean verified = memberService.verifyCodeForFindid(name, email, code);
-        if (!verified) {
-            return ResponseEntity.badRequest().body("인증번호가 올바르지 않거나 만료되었습니다.");
+        try {
+            boolean verified = memberService.verifyCodeForFindid(name, email, code);
+            if (!verified) {
+                return ResponseEntity.badRequest().body("인증번호가 올바르지 않거나 만료되었습니다.");
+            }
+            // 인증 성공 시 -> username 조회
+            String username = memberService.findUsernameByNameAndEmail(name, email);
+            return ResponseEntity.ok(username);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        // 인증 성공 시 -> username 조회
-        String username = memberService.findUsernameByNameAndEmail(name, email);
-        return ResponseEntity.ok(username);
     }
 }
