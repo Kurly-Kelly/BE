@@ -15,4 +15,6 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
     Optional<Member> findByEmail(String email);
     Optional<Member> findByUsername(String username);
 
+    // [아이디/비밀번호 찾기] 위해 이름과 이메일이 동시에 일치하는 회원
+    Optional<Member> findByNameAndEmail(String name, String email);
 }
