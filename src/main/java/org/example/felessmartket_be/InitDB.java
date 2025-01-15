@@ -1,6 +1,7 @@
 package org.example.felessmartket_be;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -32,8 +33,37 @@ public class InitDB implements CommandLineRunner {
 
         @Transactional
         public void initializeData() {
+            LocalDateTime today = LocalDateTime.now();
+            log.info("Initialization started at: {}", today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+            for (int i = 1; i <= 5; i++) {
+                String email = i + "a@naver.com";
+
+                // 이메일 중복 확인
+                if (emailExists(email)) {
+                    log.info("Skipping duplicate email: {}", email);
+                    continue;
+                }
+
+                // 회원 생성 및 저장
+                Member member = createUser(i + "abc", "password" + i, "010-0000-000" + i, email);
+                em.persist(member);
+
+                // 장바구니 생성 및 저장
+                Cart cart = Cart.createCart(member);
+                em.persist(cart);
+
+                // 상품 생성 부분 호출
+                initializeProducts(cart, i);
+            }
+
+            log.info("Initialization completed.");
+        }
+        // 상품 생성
+        private void initializeProducts(Cart cart, int index) {
 
             List<String> imgUrl1 = new ArrayList<>();
+
             imgUrl1.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%80%E1%85%AE%E1%84%86%E1%85%A11.jpg");
             imgUrl1.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%80%E1%85%AE%E1%84%86%E1%85%A11-9.png");
             imgUrl1.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%80%E1%85%AE%E1%84%86%E1%85%A11-11.webp");
@@ -164,21 +194,11 @@ public class InitDB implements CommandLineRunner {
             imgUrl15.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%8B%E1%85%A9%E1%84%8B%E1%85%B59.avif");
             imgUrl15.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%8B%E1%85%A9%E1%84%8B%E1%85%B510.gif");
 
-
-
-
-
-
             List<String> imgUrl16 = new ArrayList<>();
             imgUrl16.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%8B%E1%85%A9%E1%84%8B%E1%85%B51-1.avif");
             imgUrl16.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%8B%E1%85%A9%E1%84%8B%E1%85%B51-2.avif");
             imgUrl16.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%8B%E1%85%A9%E1%84%8B%E1%85%B51-3.jpg");
             imgUrl16.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%8B%E1%85%A9%E1%84%8B%E1%85%B51-4.jpg");
-
-
-
-
-
 
             List<String> imgUrl17 = new ArrayList<>();
             imgUrl17.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%92%E1%85%A9%E1%84%87%E1%85%A1%E1%86%A81.jpg");
@@ -192,83 +212,46 @@ public class InitDB implements CommandLineRunner {
             imgUrl17.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%92%E1%85%A9%E1%84%87%E1%85%A1%E1%86%A89.jpg");
             imgUrl17.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%92%E1%85%A9%E1%84%87%E1%85%A1%E1%86%A810.jpg");
 
-
-
-
-
-                    List<String> imgUrl18 = new ArrayList<>();
+            List<String> imgUrl18 = new ArrayList<>();
             imgUrl18.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%92%E1%85%A9%E1%84%87%E1%85%A1%E1%86%A82-1.jpg");
             imgUrl18.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%92%E1%85%A9%E1%84%87%E1%85%A1%E1%86%A82-2.gif");
             imgUrl18.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%92%E1%85%A9%E1%84%87%E1%85%A1%E1%86%A82-3.jpg");
             imgUrl18.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%92%E1%85%A9%E1%84%87%E1%85%A1%E1%86%A82-3.png");
             imgUrl18.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%92%E1%85%A9%E1%84%87%E1%85%A1%E1%86%A82-4.png");
 
-
-
-
-                List<String> imgUrl19 = new ArrayList<>();
+            List<String> imgUrl19 = new ArrayList<>();
             imgUrl19.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8E%E1%85%AE1.jpg");
             imgUrl19.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8E%E1%85%AE2.avif");
             imgUrl19.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8E%E1%85%AE3.jpg");
             imgUrl19.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8E%E1%85%AE4.jpg");
 
-
-
-
-
-
-
-                List<String> imgUrl20 = new ArrayList<>();
+            List<String> imgUrl20 = new ArrayList<>();
             imgUrl20.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8E%E1%85%AE2-1.jpg");
             imgUrl20.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A9%E1%84%8E%E1%85%AE2-2.jpg");
 
-
-
-
-
-
-                List<String> imgUrl21 = new ArrayList<>();
+            List<String> imgUrl21 = new ArrayList<>();
             imgUrl21.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%A1%E1%84%80%E1%85%AA1.avif");
             imgUrl21.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%A1%E1%84%80%E1%85%AA2.webp");
 
-
-
-
-
-                    List<String> imgUrl22 = new ArrayList<>();
+            List<String> imgUrl22 = new ArrayList<>();
             imgUrl22.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%A1%E1%84%80%E1%85%AA2-1.jpeg");
             imgUrl22.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%A1%E1%84%80%E1%85%AA2-2.avif");
             imgUrl22.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%A1%E1%84%80%E1%85%AA2-3.jpg");
             imgUrl22.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%A1%E1%84%80%E1%85%AA2-4.jpg");
 
-
-
-
-List<String> imgUrl23 = new ArrayList<>();
+            List<String> imgUrl23 = new ArrayList<>();
             imgUrl23.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%87%E1%85%A21.jpg");
             imgUrl23.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%87%E1%85%A22.jpg");
 
-
-
-
-
-
-                List<String> imgUrl24 = new ArrayList<>();
+            List<String> imgUrl24 = new ArrayList<>();
             imgUrl24.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%87%E1%85%A22-1.jpg");
             imgUrl24.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%87%E1%85%A22-2.jpg");
 
-
-
-
-
-                List<String> imgUrl25 = new ArrayList<>();
+            List<String> imgUrl25 = new ArrayList<>();
             imgUrl25.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A1%E1%86%B7%E1%84%80%E1%85%B2%E1%86%AF1.avif");
             imgUrl25.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A1%E1%86%B7%E1%84%80%E1%85%B2%E1%86%AF2.jpg");
 
-
-
-
-                List<String> imgUrl27 = new ArrayList<>();
+            List<String> imgUrl27 = new ArrayList<>();
             imgUrl27.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%A2%E1%86%BC%E1%84%89%E1%85%A5%E1%86%BC1.jpg");
             imgUrl27.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%A2%E1%86%BC%E1%84%89%E1%85%A5%E1%86%AB2.avif");
             imgUrl27.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%A2%E1%86%BC%E1%84%89%E1%85%A5%E1%86%AB3.avif");
@@ -279,19 +262,11 @@ List<String> imgUrl23 = new ArrayList<>();
             imgUrl27.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%A2%E1%86%BC%E1%84%89%E1%85%A5%E1%86%AB10.avif");
             imgUrl27.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%A2%E1%86%BC%E1%84%89%E1%85%A5%E1%86%AB11.avif");
 
-
-
-
-
-                List<String> imgUrl26 = new ArrayList<>();
+            List<String> imgUrl26 = new ArrayList<>();
             imgUrl26.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A1%E1%86%B7%E1%84%80%E1%85%B2%E1%86%AF2-1.jpg");
             imgUrl26.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A1%E1%86%B7%E1%84%80%E1%85%B2%E1%86%AF2-2.jpg");
             imgUrl26.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A1%E1%86%B7%E1%84%80%E1%85%B2%E1%86%AF2-4.jpg");
             imgUrl26.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A1%E1%86%B7%E1%84%80%E1%85%B2%E1%86%AF2-5.jpg");
-
-
-
-
 
 
             Product product1 = createProduct("해남 꿀고구마 베니하루카",7900,"해남 꿀고구마 베니하루카 2/3/5/10kg",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl1);
@@ -308,7 +283,6 @@ List<String> imgUrl23 = new ArrayList<>();
             Product product12 = createProduct("국내산 싱싱한 시금치",9900,"국내산 싱싱한 시금치 1kg 외",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl12);
             Product product13 = createProduct("무농약 모듬 쌈채소 샐러드",13900,"무농약 모듬 쌈채소 샐러드 9종내외 500g 1kg(당일수확)",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl13);
             Product product14 = createProduct("콩나물 시루 재배기",13900,"[5%쿠폰]콩나물 시루 재배기_2sizes",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl14);
-
             Product product15 = createProduct(" 올스텐 만능채칼 양배추",4900,"올스텐 만능채칼 양배추 오이 감자 당근 우엉 쏨땀 필러",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl15);
             Product product16 = createProduct(" 국내산 간편한 미니오이",13900,"국내산 간편한 미니오이 1kg 외 ",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl16);
             Product product17 = createProduct("달콤한 영암 신품종 호박고구마",13900,"달콤한 영암 신품종 호박고구마 호풍미 고구마 세척 3kg 5kg 당근고구마",15900,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl17);
@@ -322,9 +296,6 @@ List<String> imgUrl23 = new ArrayList<>();
             Product product25 = createProduct(" 제주도 산지직송 새콤달콤 노지감귤",11900,"제주도 산지직송 새콤달콤 노지감귤 4.5kg 9kg",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl25);
             Product product26 = createProduct(" 산지직송 무농약 친환경 제주 감귤",95900," 산지직송 무농약 친환경 제주 감귤 로얄과 10kg ",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl26);
             Product product27 = createProduct("  제주 생선 3종", 36900," 제주 생선 3종, 법성포 굴비 골라담기",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl27);
-
-
-
 
             em.persist(product1);
             em.persist(product2);
@@ -354,6 +325,17 @@ List<String> imgUrl23 = new ArrayList<>();
             em.persist(product26);
             em.persist(product27);
 
+        }
+        private boolean emailExists(String email) {
+            TypedQuery<Long> query = em.createQuery(
+                "SELECT COUNT(m) FROM Member m WHERE m.email = :email", Long.class
+            );
+            query.setParameter("email", email);
+            return query.getSingleResult() > 0;
+        }
+
+        private Member createUser(String name, String password, String phoneNumber, String email) {
+            return new Member(name, password, phoneNumber, email);
         }
 
         private Product createProduct(String name, Integer price, String description,
