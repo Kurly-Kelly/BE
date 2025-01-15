@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.apache.bcel.classfile.annotation.AnnotationGen;
 import org.example.felessmartket_be.domain.Member;
 import org.example.felessmartket_be.repository.MemberRepository;
+import org.example.felessmartket_be.service.RedisService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final MemberRepository memberRepository;
+    private final RedisService redisService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -35,6 +38,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 2) 토큰이 존재하고 만료되지 않았다면 검증 진행
         if (token != null) {
             try {
+                // 블랙리스트 체크 추가
+                String blackListKey = "BL: " + token;
+
+                String isBlackListed = redisService.getValues(blackListKey);
+
+                if (isBlackListed != null) {
+                    log.warn("블랙리스트에 등록된 토큰입니다.");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
                 // 토큰 만료 여부, 위조 여부 등 확인
                 if (!jwtUtil.isExpired(token)) {
                     // 2-1) 토큰에서 username(로그인 식별자) 추출

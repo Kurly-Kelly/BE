@@ -34,7 +34,7 @@ public class SearchResponseDto {
             product.getProductStatus(),
             product.getMainCategory(),
             product.getSubCategory(),
-            product.getImgURL()
+            product.getImageUrls().toString()
         );
     }
 }

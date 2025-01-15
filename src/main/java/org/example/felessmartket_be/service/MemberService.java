@@ -8,12 +8,18 @@ import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.felessmartket_be.domain.Member;
+import org.example.felessmartket_be.domain.MemberStatus;
 import org.example.felessmartket_be.domain.dto.EmailVerificationResult;
 import org.example.felessmartket_be.domain.dto.LoginResponseDto;
+import org.example.felessmartket_be.domain.dto.LogoutResponseDto;
+import org.example.felessmartket_be.domain.dto.MemberDeleteRequestDto;
+import org.example.felessmartket_be.domain.dto.MemberDeleteResponseDto;
 import org.example.felessmartket_be.domain.dto.MemberRequestDto;
 import org.example.felessmartket_be.jwt.JWTUtil;
 import org.example.felessmartket_be.repository.MemberRepository;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,12 +53,48 @@ public class MemberService {
         return newMember;
     }
 
+    public MemberDeleteResponseDto deleteMember(MemberDeleteRequestDto requestDto, String accessToken) {
+        // 1) 회원 조회
+        Member member = memberRepository.findByUsername(requestDto.getUsername())
+            .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
+
+        // 2) 이미 탈퇴 상태인지 확인
+        if(member.getStatus() == MemberStatus.DELETED) {
+            return MemberDeleteResponseDto.fail("이미 탈퇴된 사용자입니다.");
+        }
+
+        // 3) 논리적 삭제: status를 DELETED로 변경
+        member.setStatus(MemberStatus.DELETED);
+
+        // 4) Redis에서 Refresh Token 삭제
+        String refreshTokenKey = "RT: " + requestDto.getUsername();
+        redisService.deleteValues(refreshTokenKey);
+
+        // 5) Access Token 블랙리스트 등록
+        if (accessToken != null & !accessToken.isEmpty()) {
+            redisService.setValues(
+                "BL: " + accessToken,
+                "true",
+                Duration.ofMinutes(30)
+            );
+            log.info("Access Token Blacklist 추가 완료: {}", requestDto.getUsername());
+        }
+        log.info("회원 [{}] 탈퇴 처리 완료", requestDto.getUsername());
+        return MemberDeleteResponseDto.success("회원 탈퇴가 완료되었습니다.");
+    }
+
+
+
     // username, password를 받아서 JWT Access/Refresh 코큰 발급
     public LoginResponseDto login(String username, String password) {
         // 1) DB에서 사용자 정보 조회
         Member member = memberRepository.findByUsername(username)
             .orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
 
+        // 탈퇴(비활성) 회원 예외 처리
+        if(member.getStatus() == MemberStatus.DELETED) {
+            throw new RuntimeException("탈퇴된 사용자입니다. 다시 가입해주세요.");
+        }
         // 2) 비밀번호 매칭
         if (member.getPassword().equals(password)) {
             log.warn("평문 비밀번호와 일치함. 암호화된 비밀번호로 변경 필요");
@@ -67,6 +109,7 @@ public class MemberService {
         String accessToken = jwtUtil.createAccessToken(username, "ROLE_USER", accessExpiredMs);
         String refreshToken = jwtUtil.createRefreshToken(username, "ROLE_USER", refreshExpiredMs);
 
+      //  redisService.deleteValues("BL: " + accessToken);
 
         // 4) Refresh Token -> Redis에 저장
         // Key는 "RT: " + username, 만료시간은 7일
@@ -89,6 +132,57 @@ public class MemberService {
             refreshToken,
             "로그인 성공"
         );
+    }
+
+    public LogoutResponseDto logout(String username, String token) {
+        try {
+            // Redis에서 Refresh Token 제거
+            String refreshTokenKey = "RT: " + username;
+            String refreshToken = redisService.getValues(refreshTokenKey);
+
+            if (refreshToken == null) {
+                return LogoutResponseDto.fail("이미 로그아웃된 사용자입니다.");
+            }
+
+            // Refresh Token 삭제
+            redisService.deleteValues(refreshTokenKey);
+            log.info("Refresh Token 삭제 완료: {}", username);
+
+            // Access Token 블랙리스트 처리
+//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//            if (authentication != null) {
+//                String accessToken = extractAccessToken(authentication);
+//                if (accessToken != null) {
+//                    redisService.setValues(
+//                        "BL: " + accessToken,
+//                        "true",
+//                        Duration.ofMinutes(30)
+//                    );
+//                    log.info("Access Token Blacklist 추가 완료: {}", username);
+//                }
+//            }
+            if (token != null && !token.isEmpty()) {
+                redisService.setValues(
+                    "BL: " + token,
+                    "true",
+                    Duration.ofMinutes(30)
+                );
+                log.info("Access Token Blacklist 추가 완료: {}", username);
+            }
+
+            return LogoutResponseDto.success();
+        } catch (Exception e) {
+            log.error("로그아웃 처리 중 에러 발생: {}", e.getMessage());
+            return  LogoutResponseDto.fail("로그아웃 처리 중 오류가 발생했습니다.");
+        }
+    }
+
+    private String extractAccessToken(Authentication authentication) {
+        String credentials = (String) authentication.getCredentials();
+        if (credentials != null && credentials.startsWith("Bearer ")) {
+            return credentials.substring(7);
+        }
+        return null;
     }
 
     public boolean checkEmailDuplicate(String email) {
@@ -138,5 +232,4 @@ public class MemberService {
 
         return EmailVerificationResult.of(authResult);
     }
-
 }

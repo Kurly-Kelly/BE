@@ -1,14 +1,20 @@
 package org.example.felessmartket_be.controller;
 
+import com.sun.net.httpserver.HttpsConfigurator;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.example.felessmartket_be.domain.Member;
 import org.example.felessmartket_be.domain.dto.EmailVerificationResult;
 import org.example.felessmartket_be.domain.dto.LoginReqeustDto;
 import org.example.felessmartket_be.domain.dto.LoginResponseDto;
+import org.example.felessmartket_be.domain.dto.LogoutResponseDto;
+import org.example.felessmartket_be.domain.dto.MemberDeleteRequestDto;
+import org.example.felessmartket_be.domain.dto.MemberDeleteResponseDto;
 import org.example.felessmartket_be.domain.dto.MemberRequestDto;
 import org.example.felessmartket_be.domain.dto.MemberResponseDto;
 import org.example.felessmartket_be.domain.dto.SingleResponseDto;
@@ -18,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +45,39 @@ public class MemberController {
     @GetMapping("")
     public List<Member> readMember() {
         return memberRepository.findAll();
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<MemberDeleteResponseDto> deleteMember(@RequestBody @Valid
+        MemberDeleteRequestDto requestDto, HttpServletRequest request) {
+        log.info("POST /users/delete 요청: username={}", requestDto.getUsername());
+
+        // 1. Authorization 헤더에서 액세스 토큰 추출
+        String bearerToken = request.getHeader("Authorization");
+        String token = null;
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            token = bearerToken.substring(7).trim();
+        }
+
+        if(token == null) {
+            return ResponseEntity.badRequest().body(
+                MemberDeleteResponseDto.fail("토큰이 존재하지 않습니다")
+            );
+        }
+
+        try {
+            // 2. Member Service 호출: (DTO, AccessToekn) 전달
+            MemberDeleteResponseDto responseDto = memberService.deleteMember(requestDto, token);
+            if (responseDto.isSuccess()) {
+                return ResponseEntity.ok(responseDto);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
+            }
+        } catch (RuntimeException e) {
+            log.error("회원 탈퇴 중 오류 발생: {}", e.getMessage());
+            MemberDeleteResponseDto responseDto = MemberDeleteResponseDto.fail(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto);
+        }
     }
 
     @PostMapping("/signup")
@@ -124,5 +164,40 @@ public class MemberController {
 
         // 5) 200 OK와 함께 사용자 정보 반환
         return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<LogoutResponseDto> logout(HttpServletRequest request) {
+        log.info("POST /users/logout 요청");
+
+        // Authrozation 헤더에서 토큰 추출
+        String bearerToken = request.getHeader("Authorization");
+        String token = null;
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            token = bearerToken.substring(7).trim();
+        }
+
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(LogoutResponseDto.fail("유효한 토큰이 없습니다."));
+        }
+
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() ||
+            !(authentication.getPrincipal() instanceof Member)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(LogoutResponseDto.fail("로그인된 사용자가 아닙니다."));
+        }
+
+        Member member = (Member) authentication.getPrincipal();
+        LogoutResponseDto responseDto = memberService.logout(member.getUsername(), token);
+
+        if (responseDto.isSuccess()) {
+            SecurityContextHolder.clearContext();
+            return ResponseEntity.ok(responseDto);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+        }
     }
 }
