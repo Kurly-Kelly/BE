@@ -26,8 +26,8 @@ public class ProductRequestDto {
     MainCategory mainCategory;
     SubCategory subCategory;
 
-    @JsonProperty("image")
-    String imgURL;
+
+    String imageUrl; // 여러 이미지 URL 저장 가능
 
     public static Product of(ProductRequestDto productRequestDto) {
         return new Product(
@@ -36,10 +36,10 @@ public class ProductRequestDto {
             productRequestDto.getDescription(),
             productRequestDto.getPrice(),
             productRequestDto.getQuantity(),
-            productRequestDto.getProductStatus(),
+            ProductStatus.available,
             productRequestDto.getMainCategory(),
             productRequestDto.getSubCategory(),
-            productRequestDto.getImgURL()
+            null
         );
     }
 }

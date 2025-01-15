@@ -95,7 +95,7 @@ public class CartService {
                 cartItem.getProduct().getName(),
                 cartItem.getQuantity(),
                 cartItem.getProduct().getPrice(),
-                cartItem.getProduct().getImgURL()
+                cartItem.getProduct().getImageUrls().toString()
             ))
             .collect(Collectors.toList());
 
