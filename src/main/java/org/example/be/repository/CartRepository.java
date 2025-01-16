@@ -1,0 +1,9 @@
+package org.example.be.repository;
+
+import org.example.be.domain.Cart;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CartRepository extends JpaRepository<Cart, Long> {
+    Cart findByMember_Username(String username);
+
+}
