@@ -40,8 +40,9 @@ public class InitDB implements CommandLineRunner {
                 String email = i + "a@naver.com";
 
                 // 이메일 중복 확인
-                if (emailExists(email)) {
-                    log.info("Skipping duplicate email: {}", email);
+                boolean exists = emailExists(email);
+                if (exists) {
+                    System.out.println("Skipping duplicate email: " + email);
                     continue;
                 }
 
@@ -143,14 +144,12 @@ public class InitDB implements CommandLineRunner {
             imgUrl10.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%B5%E1%84%80%E1%85%B3%E1%86%B7%E1%84%8E%E1%85%B59.jpg");
             imgUrl10.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%B5%E1%84%80%E1%85%B3%E1%86%B7%E1%84%8E%E1%85%B510.jpg");
 
-
             List<String> imgUrl11= new ArrayList<>();
             imgUrl11.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%B5%E1%84%80%E1%85%B3%E1%86%B7%E1%84%8E%E1%85%B5+%E1%84%91%E1%85%A6%E1%84%90%E1%85%AE%E1%84%8E%E1%85%B5%E1%84%82%E1%85%A61.jpg");
             imgUrl11.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%B5%E1%84%80%E1%85%B3%E1%86%B7%E1%84%8E%E1%85%B5+%E1%84%91%E1%85%A6%E1%84%90%E1%85%AE%E1%84%8E%E1%85%B5%E1%84%82%E1%85%A62.jpg");
             imgUrl11.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%B5%E1%84%80%E1%85%B3%E1%86%B7%E1%84%8E%E1%85%B5+%E1%84%91%E1%85%A6%E1%84%90%E1%85%AE%E1%84%8E%E1%85%B5%E1%84%82%E1%85%A63.jpg");
             imgUrl11.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%B5%E1%84%80%E1%85%B3%E1%86%B7%E1%84%8E%E1%85%B5+%E1%84%91%E1%85%A6%E1%84%90%E1%85%AE%E1%84%8E%E1%85%B5%E1%84%82%E1%85%A64.jpg");
             imgUrl11.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%B5%E1%84%80%E1%85%B3%E1%86%B7%E1%84%8E%E1%85%B5+%E1%84%91%E1%85%A6%E1%84%90%E1%85%AE%E1%84%8E%E1%85%B5%E1%84%82%E1%85%A65.jpg");
-
 
             List<String> imgUrl12= new ArrayList<>();
             imgUrl12.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%89%E1%85%B5%E1%86%BC%E1%84%89%E1%85%B5%E1%86%BC%E1%84%92%E1%85%A1%E1%86%AB%E1%84%89%E1%85%B5%E1%84%80%E1%85%B3%E1%86%B7%E1%84%8E%E1%85%B5%E1%84%86%E1%85%A6%E1%84%8B%E1%85%B5%E1%86%AB.jpg");
@@ -268,62 +267,52 @@ public class InitDB implements CommandLineRunner {
             imgUrl26.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A1%E1%86%B7%E1%84%80%E1%85%B2%E1%86%AF2-4.jpg");
             imgUrl26.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A1%E1%86%B7%E1%84%80%E1%85%B2%E1%86%AF2-5.jpg");
 
-
             Product product1 = createProduct("해남 꿀고구마 베니하루카",7900,"해남 꿀고구마 베니하루카 2/3/5/10kg",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl1);
             Product product2 = createProduct("포슬포슬 햇 수미감자",10000,"포슬포슬 햇 수미감자 3kg/5kg/10kg(국내산)",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl2);
             Product product3 = createProduct("제주 구좌 당근",5900,"제주 구좌 당근 2/3/5kg (국내산)",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl3);
             Product product4 = createProduct("매일야채 고농축 당근의힘",23900,"매일야채 고농축 당근의힘 125ml*24팩",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl4);
             Product product5 = createProduct("당근 라페 프랑스식 샐러드",9900,"당근 라페 프랑스식 샐러드 200g",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl5);
             Product product6 = createProduct("산지직송 제주 구좌 햇 당근 흙당근",23900,"산지직송 제주 구좌 햇 당근 흙당근 국산 국내산 제철 5kg 10kg 주스용 요리용 업소용",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl6);
-            Product product7 = createProduct("반건조 스위트 고구마 70g",27900,"",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl7);
+            Product product7 = createProduct("반건조 스위트 고구마 70g",27900,"국민 영양간식 고구마 농장",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl7);
             Product product8 = createProduct("황성주박사의 국산콩 두유 검은콩 고구마",27900,"황성주박사의 국산콩 두유 검은콩 고구마 190ml 48개",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl8);
-            Product product9 = createProduct("인기간식 감자스낵 과자세트",19900,"",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl9);
-            Product product10 = createProduct("해풍월동 시금치 씨앗 채소 텃밭 가꾸기",3000,"",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl10);
+            Product product9 = createProduct("인기간식 감자스낵 과자세트",19900,"인기있는 감자 스낵으로 알차게 구성",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl9);
+            Product product10 = createProduct("해풍월동 시금치 씨앗 채소 텃밭 가꾸기",3000,"뿌리가 붉은 토종 월동 시금치",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl10);
             Product product11 = createProduct("시금치 페투치네 파스타 페투치니 면",5300,"시금치 페투치네 파스타 페투치니 면",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl11);
             Product product12 = createProduct("국내산 싱싱한 시금치",9900,"국내산 싱싱한 시금치 1kg 외",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl12);
             Product product13 = createProduct("무농약 모듬 쌈채소 샐러드",13900,"무농약 모듬 쌈채소 샐러드 9종내외 500g 1kg(당일수확)",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl13);
             Product product14 = createProduct("콩나물 시루 재배기",13900,"[5%쿠폰]콩나물 시루 재배기_2sizes",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl14);
-            Product product15 = createProduct(" 올스텐 만능채칼 양배추",4900,"올스텐 만능채칼 양배추 오이 감자 당근 우엉 쏨땀 필러",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl15);
-            Product product16 = createProduct(" 국내산 간편한 미니오이",13900,"국내산 간편한 미니오이 1kg 외 ",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl16);
+            Product product15 = createProduct(" 올스텐 만능채칼 양배추",4900,"올스텐 만능채칼 양배추 오이 감자 당근 우엉 쏨땀 필러",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl15);
+            Product product16 = createProduct(" 국내산 간편한 미니오이",13900,"국내산 간편한 미니오이 1kg 외 ",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl16);
             Product product17 = createProduct("달콤한 영암 신품종 호박고구마",13900,"달콤한 영암 신품종 호박고구마 호풍미 고구마 세척 3kg 5kg 당근고구마",15900,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl17);
             Product product18 = createProduct("해남 꿀밤 고구마 베니하루카",13900,"해남 꿀밤 고구마 베니하루카 [세척] 3kg 5kg 10kg 20kg 황금호박 고구마",5700,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl18);
-            Product product19 = createProduct("고추참치",36100,"고추참치 250g*10개",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl19);
-            Product product20 = createProduct("금빛 태양의맛 고추가루 매운맛 베트남산",22900,"금빛 태양의맛 고추가루 매운맛 베트남산 1kg ",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl20);
+            Product product19 = createProduct("고추참치",36100,"고추참치 250g*10개",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl19);
+            Product product20 = createProduct("금빛 태양의맛 고추가루 매운맛 베트남산",22900,"금빛 태양의맛 고추가루 매운맛 베트남산 1kg ",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl20);
             Product product21 = createProduct("경북 부사 꿀사과 못난이",10900,"[경북 부사 꿀사과 못난이 2/3/5kg 택1",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl21);
             Product product22 = createProduct("콩나물 시루 재배기",13900,"[5%쿠폰]콩나물 시루 재배기_2sizes",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl22);
-            Product product23 = createProduct("국산 도라지배즙 배즙 1박스",17900,"국산 도라지배즙 배즙 1박스 30포 ",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl23);
-            Product product24 = createProduct("짱구는 못말려 배도라지스틱",14900,"짱구는 못말려 배도라지스틱 20포  ",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl24);
-            Product product25 = createProduct(" 제주도 산지직송 새콤달콤 노지감귤",11900,"제주도 산지직송 새콤달콤 노지감귤 4.5kg 9kg",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl25);
-            Product product26 = createProduct(" 산지직송 무농약 친환경 제주 감귤",95900," 산지직송 무농약 친환경 제주 감귤 로얄과 10kg ",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl26);
-            Product product27 = createProduct("  제주 생선 3종", 36900," 제주 생선 3종, 법성포 굴비 골라담기",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl27);
+            Product product23 = createProduct("국산 도라지배즙 배즙 1박스",17900,"국산 도라지배즙 배즙 1박스 30포 ",45,MainCategory.FRUIT,SubCategory.APPLE_PEAR,imgUrl23);
+            Product product24 = createProduct("짱구는 못말려 배도라지스틱",14900,"짱구는 못말려 배도라지스틱 20포  ",45,MainCategory.FRUIT,SubCategory.APPLE_PEAR,imgUrl24);
+            Product product25 = createProduct(" 제주도 산지직송 새콤달콤 노지감귤",11900,"제주도 산지직송 새콤달콤 노지감귤 4.5kg 9kg",45,MainCategory.FRUIT,SubCategory.CITRUS,imgUrl25);
+            Product product26 = createProduct(" 산지직송 무농약 친환경 제주 감귤",95900," 산지직송 무농약 친환경 제주 감귤 로얄과 10kg ",45,MainCategory.FRUIT,SubCategory.CITRUS,imgUrl26);
+            Product product27 = createProduct("  제주 생선 3종", 36900," 제주 생선 3종, 법성포 굴비 골라담기",45,MainCategory.SEAFOOD,SubCategory.FISH,imgUrl27);
 
-            em.persist(product1);
-            em.persist(product2);
-            em.persist(product3);
-            em.persist(product4);
-            em.persist(product5);
-            em.persist(product6);
-            em.persist(product7);
-            em.persist(product8);
-            em.persist(product9);
-            em.persist(product10);
-            em.persist(product11);
-            em.persist(product12);
-            em.persist(product13);
-            em.persist(product14);
-            em.persist(product15);
-            em.persist(product16);
-            em.persist(product17);
-            em.persist(product18);
-            em.persist(product19);
-            em.persist(product20);
-            em.persist(product21);
-            em.persist(product22);
-            em.persist(product23);
-            em.persist(product24);
-            em.persist(product25);
-            em.persist(product26);
-            em.persist(product27);
+            List<Product> products = List.of(
+                product1, product2, product3, product4, product5, product6, product7,
+                product8, product9, product10, product11, product12, product13,
+                product14, product15, product16, product17, product18, product19,
+                product20, product21, product22, product23, product24, product25,
+                product26, product27
+            );
+
+            // 각 상품을 저장하고, 저장 직후 장바구니 아이템 생성
+            for (int j = 0; j < products.size(); j++) {
+                Product product = products.get(j);
+                em.persist(product);
+
+                // 장바구니 아이템 생성
+                CartItem cartItem = CartItem.createCartItem(cart, product, 3);
+                em.persist(cartItem);
+            }
+
 
         }
         private boolean emailExists(String email) {
@@ -352,4 +341,3 @@ public class InitDB implements CommandLineRunner {
         }
     }
 }
-

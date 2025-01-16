@@ -192,6 +192,10 @@ public class MemberService {
         return memberRepository.existsByUsername(userId);
     }
 
+    public boolean checkPhoneDuplicate(String phone) {
+        return memberRepository.existsByPhone(phone);
+    }
+
     public void sendCodeToEmail(String toEmail) {
         this.checkDuplicatedEmail(toEmail);
         String title = "FELESS-Market 이메일 인증 번호";

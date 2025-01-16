@@ -88,6 +88,15 @@ public class MemberController {
         // true - 중복되는 이메일 있음
         // false - 중복되는 이메일 없음
     }
+
+    @GetMapping("/phone")
+    public ResponseEntity<Boolean> validatePhone(@RequestParam(value = "p") String phone) {
+        boolean isDuplicate = memberService.checkPhoneDuplicate(phone);
+        return ResponseEntity.ok(isDuplicate);
+        // true - 중복되는 전화번호 있음
+        // false - 중복되는 전화번호 없음
+    }
+
     @GetMapping("id")
     public ResponseEntity<Boolean> validateID(@RequestParam(value = "id") String userId) {
         return ResponseEntity.ok(memberService.checkIdDuplicate(userId));
