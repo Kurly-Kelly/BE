@@ -61,7 +61,7 @@ public class MemberController {
         }
 
         try {
-            // 2. Member Service 호출: (DTO, AccessToekn) 전달
+            // 2. Member Service 호출: (DTO, AccessToken) 전달
             MemberDeleteResponseDto responseDto = memberService.deleteMember(requestDto, token);
             if (responseDto.isSuccess()) {
                 return ResponseEntity.ok(responseDto);
@@ -107,12 +107,12 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginReqeustDto reqeustDto, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginReqeustDto requestDto, HttpServletResponse response) {
         try {
             // 1) Service 호출 -> 로그인 & 토큰 생성
             LoginResponseDto loginResponse = memberService.login(
-                reqeustDto.getUsername(),
-                reqeustDto.getPassword()
+                requestDto.getUsername(),
+                requestDto.getPassword()
             );
 
             // 2) Controller에서 헤더 세팅
@@ -165,7 +165,7 @@ public class MemberController {
     public ResponseEntity<LogoutResponseDto> logout(HttpServletRequest request) {
         log.info("POST /users/logout 요청");
 
-        // Authrozation 헤더에서 토큰 추출
+        // Authorization 헤더에서 토큰 추출
         String bearerToken = request.getHeader("Authorization");
         String token = null;
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -193,6 +193,33 @@ public class MemberController {
             return ResponseEntity.ok(responseDto);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+        }
+    }
+
+    // [아이디 찾기] 인증번호 발송
+    @PostMapping("/find-id/send-code")
+    public ResponseEntity<?> sendFindIdCode(@RequestParam String name, @RequestParam String email) {
+        try {
+            memberService.sendCodeToEmailForFind(name, email);
+            return ResponseEntity.ok("인증번호가 발송되었습니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // [아이디 찾기] 인증번호 확인 후, 아이디 반환
+    @PostMapping("/find-id/verify-code")
+    public ResponseEntity<?> verifyFindIdCode(@RequestParam String name, @RequestParam String email, @RequestParam String code) {
+        try {
+            boolean verified = memberService.verifyCodeForFindid(name, email, code);
+            if (!verified) {
+                return ResponseEntity.badRequest().body("인증번호가 올바르지 않거나 만료되었습니다.");
+            }
+            // 인증 성공 시 -> username 조회
+            String username = memberService.findUsernameByNameAndEmail(name, email);
+            return ResponseEntity.ok(username);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

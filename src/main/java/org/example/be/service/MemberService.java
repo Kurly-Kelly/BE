@@ -33,7 +33,8 @@ public class MemberService {
     private final MailService mailService;
     private final RedisService redisService;
 
-    private final long authCodeExpirationMillis = 1800000;
+    private final long authCodeExpirationMillis = 180000;
+
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -230,5 +231,76 @@ public class MemberService {
         System.out.println("authResult : " + authResult);
 
         return EmailVerificationResult.of(authResult);
+    }
+
+    /*
+      [아이디 / 비밀번호 찾기] 이메일 인증번호 발송
+      - 이름과 이메일이 모드 맞는지 확인
+      - 인증번호 생성 후 이메일 발송 & Redis 저장
+     */
+    public void sendCodeToEmailForFind(String name, String toEmail) {
+        // 1. 이름, 이메일이 정확히 일치하는 회원이 존재하는지 확인
+        checkNameEmailExist(name, toEmail);
+
+        // 2. 인증번호 생성
+        String authCode = createCode();
+
+        // 3. 메일 전송
+        String title = "[KurlyKelly] 아이디 찾기 인증번호";
+        String text = "아래 인증번호를 입력해주세요.\n인증번호: " + authCode;
+        mailService.sendEmail(toEmail, title, text);
+
+        // 4. Redis에 인증번호 저장
+        redisService.setValues(
+            AUTH_CODE_PREFIX + toEmail,
+            authCode,
+            Duration.ofMillis(this.authCodeExpirationMillis)
+        );
+    }
+
+    /*
+    * [아이디/비밀번호 찾기] 이메일 인증번호 검증
+    * - 이름과 이메일이 모두 맞는지 확인
+    * - Redis에 저장된 코드와 일치하는지 확인
+    */
+    public boolean verifyCodeForFindid(String name, String email, String inputCode) {
+        // 1. 이름+이메일이 맞는회원이 있는지 다시 확인
+        checkNameEmailExist(name, email);
+        // 2. Redis에서 인증번호 조회
+        String redisAuthCode = redisService.getValues(AUTH_CODE_PREFIX + email);
+        if (redisAuthCode == null) {
+            // 만료 or 잘못된 키
+            return false;
+        }
+        if (!redisAuthCode.equals(inputCode)) {
+            // 불일치
+            return false;
+        }
+
+        // 3. 일치하면 인증 성공 -> Redis에서 제거(재사용 방지)
+        redisService.deleteValues(AUTH_CODE_PREFIX + email);
+        return true;
+    }
+
+    /*
+    * [아이디 / 비밀번호 찾기] 인증 성공 후, 실제 username 반환
+    *  - 이름과 이메일이 일치하는 회원의 username 가져옴
+    */
+    public String findUsernameByNameAndEmail(String name, String email) {
+        Member member = memberRepository.findByNameAndEmail(name, email)
+            .orElseThrow(() -> new RuntimeException("해당 정보로 가입된 회원이 없습니다."));
+        return member.getUsername();
+    }
+
+    /*
+    * [아이디 / 비밀번호 찾기]용으로 이름과 이메일이 모두 존재하는지 확인
+    * - 둘 중 하나라도 틀리면 예외 발생
+    */
+    private void checkNameEmailExist(String name, String email) {
+        Optional<Member> member = memberRepository.findByNameAndEmail(name, email);
+        if(member.isEmpty()) {
+            log.debug("MemberService.checkNameEmailExist - 이름 또는 이메일 불일치 name: {}, email:{}", name, email);
+            throw new RuntimeException("이름 또는 이메일이 잘못되었습니다.");
+        }
     }
 }
