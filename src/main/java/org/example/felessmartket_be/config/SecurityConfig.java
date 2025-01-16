@@ -53,7 +53,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
             // 회원가입 및 로그인 API는 모두 접근 가능
             .requestMatchers("/users/signup", "/users/login", "/users/logout").permitAll()
-            .requestMatchers("/users/email/**", "/users/id/**").permitAll()
+            .requestMatchers("/users/email/**", "/users/id/**", "/users/find-id/**").permitAll()
 
             // 상품 관련 API는 모두 접근 가능
             .requestMatchers("/product/**").permitAll()
