@@ -148,19 +148,6 @@ public class MemberService {
             redisService.deleteValues(refreshTokenKey);
             log.info("Refresh Token 삭제 완료: {}", username);
 
-            // Access Token 블랙리스트 처리
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            if (authentication != null) {
-//                String accessToken = extractAccessToken(authentication);
-//                if (accessToken != null) {
-//                    redisService.setValues(
-//                        "BL: " + accessToken,
-//                        "true",
-//                        Duration.ofMinutes(30)
-//                    );
-//                    log.info("Access Token Blacklist 추가 완료: {}", username);
-//                }
-//            }
             if (token != null && !token.isEmpty()) {
                 redisService.setValues(
                     "BL: " + token,
@@ -238,8 +225,8 @@ public class MemberService {
     }
 
     /*
-      [아이디 / 비밀번호 찾기] 이메일 인증번호 발송
-      - 이름과 이메일이 모드 맞는지 확인
+      [아이디 찾기] 이메일 인증번호 발송
+      - 이름과 이메일이 모두 맞는지 확인
       - 인증번호 생성 후 이메일 발송 & Redis 저장
      */
     public void sendCodeToEmailForFind(String name, String toEmail) {
@@ -263,7 +250,7 @@ public class MemberService {
     }
 
     /*
-    * [아이디/비밀번호 찾기] 이메일 인증번호 검증
+    * [아이디 찾기] 이메일 인증번호 검증
     * - 이름과 이메일이 모두 맞는지 확인
     * - Redis에 저장된 코드와 일치하는지 확인
     */
@@ -287,7 +274,7 @@ public class MemberService {
     }
 
     /*
-    * [아이디 / 비밀번호 찾기] 인증 성공 후, 실제 username 반환
+    * [아이디 찾기] 인증 성공 후, 실제 username 반환
     *  - 이름과 이메일이 일치하는 회원의 username 가져옴
     */
     public String findUsernameByNameAndEmail(String name, String email) {
@@ -296,8 +283,56 @@ public class MemberService {
         return member.getUsername();
     }
 
+    // 1) 이름 + 이메일 일치하는지 확인 후, 인증번호 발송
+    public void sendCodeToEmailForResetPw(String name, String toEmail) {
+        // 1. 이름, 이메일 일치하는 회원이 존재하는지 확인
+        checkNameEmailExist(name, toEmail);
+
+        // 2. 인증번호 생성
+        String authCode = createCode();
+
+        // 3. 메일 전송
+        String title = "[KurlyKelly] 비밀번호 재설정 인증번호";
+        String text = "아래 인증번호르 ㄹ입력해주세요. \n인증번호 " + authCode;
+        mailService.sendEmail(toEmail,title,text);
+
+        // 4. Redis 저장
+        redisService.setValues(
+            AUTH_CODE_PREFIX + toEmail,
+            authCode,
+            Duration.ofMillis(this.authCodeExpirationMillis)
+        );
+    }
+
+    // 2) [비밀번호 찾기]인증번호 검증
+    public boolean verifyCodeForResetPw(String name, String email, String inputCode) {
+        checkNameEmailExist(name, email);
+
+        String redisAuthCode = redisService.getValues(AUTH_CODE_PREFIX + email);
+        if (redisAuthCode == null) {
+            // 만료
+            return false;
+        }
+        if (!redisAuthCode.equals(inputCode)) {
+            return false;
+        }
+        // 일치하면 Redis에서 제거
+        redisService.deleteValues(AUTH_CODE_PREFIX + email);
+        return true;
+    }
+
+    // 3) 인증 성공 후 비밀번호 변경
+    public void resetPassword(String name, String email, String newPassword) {
+        Member member = memberRepository.findByNameAndEmail(name, email)
+            .orElseThrow(() -> new RuntimeException("해당 정보로 가입된 회원이 없습니다."));
+
+        // 새 비밀번호 암호화 후 업데이트
+        member.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(member);
+    }
+
     /*
-    * [아이디 / 비밀번호 찾기]용으로 이름과 이메일이 모두 존재하는지 확인
+    * [아이디 / 비밀번호 재설정]용으로 이름과 이메일이 모두 존재하는지 확인
     * - 둘 중 하나라도 틀리면 예외 발생
     */
     private void checkNameEmailExist(String name, String email) {
