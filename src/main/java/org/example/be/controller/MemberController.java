@@ -15,12 +15,15 @@ import org.example.be.domain.dto.MemberDeleteRequestDto;
 import org.example.be.domain.dto.MemberDeleteResponseDto;
 import org.example.be.domain.dto.MemberRequestDto;
 import org.example.be.domain.dto.MemberResponseDto;
+import org.example.be.domain.dto.findDto.FindIdSendCodeRequestDto;
+import org.example.be.domain.dto.findDto.FindIdVerifyCodeRequestDto;
 import org.example.be.repository.MemberRepository;
 import org.example.be.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -207,9 +210,15 @@ public class MemberController {
 
     // [아이디 찾기] 인증번호 발송
     @PostMapping("/find-id/send-code")
-    public ResponseEntity<?> sendFindIdCode(@RequestParam String name, @RequestParam String email) {
+    public ResponseEntity<?> sendFindIdCode(@RequestBody @Valid FindIdSendCodeRequestDto requestDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors()
+                .get(0)
+                .getDefaultMessage();
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
         try {
-            memberService.sendCodeToEmailForFind(name, email);
+            memberService.sendCodeToEmailForFind(requestDto.getName(), requestDto.getEmail());
             return ResponseEntity.ok("인증번호가 발송되었습니다.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -218,14 +227,17 @@ public class MemberController {
 
     // [아이디 찾기] 인증번호 확인 후, 아이디 반환
     @PostMapping("/find-id/verify-code")
-    public ResponseEntity<?> verifyFindIdCode(@RequestParam String name, @RequestParam String email, @RequestParam String code) {
+    public ResponseEntity<?> verifyFindIdCode(@RequestBody @Valid FindIdVerifyCodeRequestDto requestDto) {
         try {
-            boolean verified = memberService.verifyCodeForFindid(name, email, code);
+            boolean verified = memberService.verifyCodeForFindid(
+                requestDto.getName(),
+                requestDto.getEmail(),
+                requestDto.getCode());
             if (!verified) {
                 return ResponseEntity.badRequest().body("인증번호가 올바르지 않거나 만료되었습니다.");
             }
             // 인증 성공 시 -> username 조회
-            String username = memberService.findUsernameByNameAndEmail(name, email);
+            String username = memberService.findUsernameByNameAndEmail(requestDto.getName(), requestDto.getEmail());
             return ResponseEntity.ok(username);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

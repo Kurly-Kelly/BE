@@ -293,7 +293,7 @@ public class MemberService {
 
         // 3. 메일 전송
         String title = "[KurlyKelly] 비밀번호 재설정 인증번호";
-        String text = "아래 인증번호르 ㄹ입력해주세요. \n인증번호 " + authCode;
+        String text = "아래 인증번호를 입력해주세요. \n인증번호 " + authCode;
         mailService.sendEmail(toEmail,title,text);
 
         // 4. Redis 저장
