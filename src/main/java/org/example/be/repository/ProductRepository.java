@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.example.be.domain.MainCategory;
 import org.example.be.domain.Product;
 import org.example.be.domain.SubCategory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,7 +21,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p JOIN FETCH p.imageUrls WHERE p.id = :id")
     Optional<Product> findByIdWithImages(@Param("id") Long id);
     List<Product> findTop10ByOrderByPriceDesc();
-
+    Page<Product> findByMainCategory(MainCategory mainCategory, Pageable pageable);
+    Page<Product> findBySubCategory(SubCategory subCategory, Pageable pageable);
+    Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
 //    List<Product> findById(Long productId);
 //    @Query("SELECT MAX(p.id) FROM Product p")
 //    Long findMaxProductId();
