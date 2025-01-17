@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.example.be.domain.MainCategory;
+import org.example.be.domain.Product;
 import org.example.be.domain.SubCategory;
 import org.example.be.domain.dto.productDto.ProductResponseDto;
 import org.example.be.service.ProductService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -46,9 +48,15 @@ public class ProductController {
 
     @GetMapping("")
     public ResponseEntity<List<ProductResponseDto>> findTop5ByOrderByPriceDesc() {
-        List<ProductResponseDto> products = productService.findTop5ByOrderByPriceDesc();
+        List<ProductResponseDto> products = productService.findTop10ByOrderByPriceDesc();
         return ResponseEntity.ok(products);
     }
+
+//    @GetMapping("/random")
+//    public ResponseEntity<List<Product>> getRandomProducts() {
+//        List<Product> randomProducts = productService.getRandomProducts();
+//        return ResponseEntity.ok(randomProducts);
+//    }
 
 
 }

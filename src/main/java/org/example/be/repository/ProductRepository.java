@@ -18,6 +18,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByMainCategory(MainCategory mainCategory);
     @Query("SELECT p FROM Product p JOIN FETCH p.imageUrls WHERE p.id = :id")
     Optional<Product> findByIdWithImages(@Param("id") Long id);
-    List<Product> findTop5ByOrderByPriceDesc();
+    List<Product> findTop10ByOrderByPriceDesc();
+
+//    List<Product> findById(Long productId);
+//    @Query("SELECT MAX(p.id) FROM Product p")
+//    Long findMaxProductId();
 
 }

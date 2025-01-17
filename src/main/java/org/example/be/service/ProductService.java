@@ -1,7 +1,9 @@
 package org.example.be.service;
 
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -53,14 +55,31 @@ public class ProductService {
             .toList();
     }
 
-    public List<ProductResponseDto> findTop5ByOrderByPriceDesc() {
-        List<Product> products = productRepository.findTop5ByOrderByPriceDesc();
+    public List<ProductResponseDto> findTop10ByOrderByPriceDesc() {
+        List<Product> products = productRepository.findTop10ByOrderByPriceDesc();
         return products.stream().map(ProductResponseDto::fromEntity).toList();
     }
 
-
-// 카테고리를 통한 상품 리스트 조회
-//    public List<Product> getProductByCategory(Category category) {
-//        return productRepository.findByCategoryIgnoreCase(category);
+//    public List<Product> getRandomProducts() {
+//        List<Product> randomProducts = new ArrayList<>();
+//        Random random = new Random();
+//
+//        // productId의 최대값 가져오기
+//        Long maxProductId = productRepository.findMaxProductId();
+//        if (maxProductId == null || maxProductId == 0) {
+//            return randomProducts; // 상품이 없으면 빈 리스트 반환
+//        }
+//
+//        // 랜덤 ID 생성하여 상품 조회
+//        for (int i = 0; i < 5\; i++) {
+//            Long randomId = 1L + random.nextLong(maxProductId); // 1부터 maxProductId 사이의 랜덤 숫자
+//            List<Product> product = productRepository.findByProductId(randomId);
+//            if (!product.isEmpty()) {
+//                randomProducts.addAll(product);
+//            }
+//        }
+//
+//        return randomProducts;
 //    }
+
 }

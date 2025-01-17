@@ -13,11 +13,11 @@ public enum SubCategory {
     LEAF_VEGETABLE("시금치·쌈채소·나물", MainCategory.VEGETABLE),
     GREEN_VEGETABLE("오이·호박·고추", MainCategory.VEGETABLE),
 
-    // 과일
+    // 과일·견과·쌀
     APPLE_PEAR("사과·배", MainCategory.FRUIT),
     CITRUS("감귤류", MainCategory.FRUIT),
 
-    // 수산물
+    // 수산·해산·건어물
     FISH("생선류", MainCategory.SEAFOOD),
     SHELLFISH("조개류", MainCategory.SEAFOOD);
 
