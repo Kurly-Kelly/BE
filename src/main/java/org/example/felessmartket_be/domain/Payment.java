@@ -12,12 +12,14 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Setter
 public class Payment {
 
     @Id
@@ -37,7 +39,6 @@ public class Payment {
     @Column(name = "toss_payment_status")
     String tossPaymentStatus;
 
-
     @Column(name = "total_amount")
     Integer totalAmount;
 
@@ -48,5 +49,11 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     PaymentStatus paymentStatus; //결제 상태(결제 완료, 결제 대기, 결제 실패)
+
+    public static Payment createPayment(Orders orders) {
+        Payment payment = new Payment();
+        payment.setOrder(orders);
+        return payment;
+    }
 
 }

@@ -49,8 +49,9 @@ public class Member {
     @OneToMany(mappedBy = "member")
     List<Orders> orderList;
 
-    public Member(String username, String password, String phoneNumber, String email) {
+    public Member(String username, String name, String password, String phoneNumber, String email) {
         this.username = username;
+        this.name = name;
         this.password = password;
         this.phone = phoneNumber;
         this.email = email;

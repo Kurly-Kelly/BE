@@ -1,5 +1,6 @@
 package org.example.felessmartket_be.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,7 +10,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,9 +48,21 @@ public class Orders {
     @JoinColumn(name = "memeber_id")
     Member member;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<OrderItem> orderItemList;
+
     Integer totalPrice;
 
 //    @Enumerated(EnumType.STRING)
     String orderStatus;
+
+    public static Orders createOrders(Member member) {
+        Orders orders = new Orders();
+        orders.setMember(member);
+        return orders;
+    }
+    public void updateTotalPrice(Integer totalPrice) {
+        this.totalPrice = totalPrice;
+    }
 
 }

@@ -38,6 +38,7 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
+
     public Long addCart(CartItemRequestDto cartItemRequestDto, String username) {
 
         // 상품 조회: cartItem 이 된 상품을 productRepository 에서 상픔 Id 조회. 존재하지 않으면 에러처리

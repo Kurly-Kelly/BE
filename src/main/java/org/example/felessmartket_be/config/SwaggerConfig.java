@@ -26,7 +26,7 @@ public class SwaggerConfig {
      */
     private Info info() {
         return new Info()
-            .title("FelessMarket API")
+            .title("Kurly-Kelly API")
             .description("ASAC-06 팀 프로젝트 / Market-Kurly 클론 프로젝트")
             .version("1.0");
     }

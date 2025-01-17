@@ -12,14 +12,15 @@ import org.example.felessmartket_be.domain.Orders;
 @AllArgsConstructor
 public class OrdersResponseDto {
 
-    private String orderId;
+    private Long orderId;
     private Integer amount;
-    private Boolean result;
+    private Long memberId;
 
-//    public static OrdersResponseDto from(Orders orders) {
-//        return new OrdersResponseDto(
-//            orders.getTossOrderId(),
-//            orders.getTotalPrice()
-//        );
-//    }
+    public static OrdersResponseDto from(Orders orders) {
+        return new OrdersResponseDto(
+            orders.getId(),
+            orders.getTotalPrice(),
+            orders.getMember().getId()
+        );
+    }
 }

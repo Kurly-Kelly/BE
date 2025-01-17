@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequestMapping("/admin")
 @RestController
-public class adminController {
+public class AdminController {
 
     adminService productService;
 
