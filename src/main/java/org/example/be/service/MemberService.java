@@ -284,9 +284,9 @@ public class MemberService {
     }
 
     // 1) 이름 + 이메일 일치하는지 확인 후, 인증번호 발송
-    public void sendCodeToEmailForResetPw(String name, String toEmail) {
+    public void sendCodeToEmailForResetPw(String username, String toEmail) {
         // 1. 이름, 이메일 일치하는 회원이 존재하는지 확인
-        checkNameEmailExist(name, toEmail);
+        checkUsernameEmailExist(username, toEmail);
 
         // 2. 인증번호 생성
         String authCode = createCode();
@@ -305,8 +305,8 @@ public class MemberService {
     }
 
     // 2) [비밀번호 찾기]인증번호 검증
-    public boolean verifyCodeForResetPw(String name, String email, String inputCode) {
-        checkNameEmailExist(name, email);
+    public boolean verifyCodeForResetPw(String username, String email, String inputCode) {
+        checkUsernameEmailExist(username, email);
 
         String redisAuthCode = redisService.getValues(AUTH_CODE_PREFIX + email);
         if (redisAuthCode == null) {
@@ -322,8 +322,8 @@ public class MemberService {
     }
 
     // 3) 인증 성공 후 비밀번호 변경
-    public void resetPassword(String name, String email, String newPassword) {
-        Member member = memberRepository.findByNameAndEmail(name, email)
+    public void resetPassword(String username, String email, String newPassword) {
+        Member member = memberRepository.findByUsernameAndEmail(username, email)
             .orElseThrow(() -> new RuntimeException("해당 정보로 가입된 회원이 없습니다."));
 
         // 새 비밀번호 암호화 후 업데이트
@@ -332,7 +332,7 @@ public class MemberService {
     }
 
     /*
-    * [아이디 / 비밀번호 재설정]용으로 이름과 이메일이 모두 존재하는지 확인
+    * [아이디 찾기]용으로 이름과 이메일이 모두 존재하는지 확인
     * - 둘 중 하나라도 틀리면 예외 발생
     */
     private void checkNameEmailExist(String name, String email) {
@@ -340,6 +340,14 @@ public class MemberService {
         if(member.isEmpty()) {
             log.debug("MemberService.checkNameEmailExist - 이름 또는 이메일 불일치 name: {}, email:{}", name, email);
             throw new RuntimeException("이름 또는 이메일이 잘못되었습니다.");
+        }
+    }
+
+    private void checkUsernameEmailExist(String username, String email) {
+        Optional<Member> member = memberRepository.findByUsernameAndEmail(username, email);
+        if(member.isEmpty()) {
+            log.debug("MemberService.checkUsernameEmailExist - 아이디 또는 이메일 불일치 username: {}, email: {},", username, email);
+            throw new RuntimeException("아이디 또는 이메일 잘못되었습니다.");
         }
     }
 }
