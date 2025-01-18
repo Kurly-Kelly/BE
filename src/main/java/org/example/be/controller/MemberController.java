@@ -266,7 +266,7 @@ public class MemberController {
         }
     }
 
-    // [비밀번호 재설정] 인증번호 검증 + 새 비밀번호 설정
+    // [비밀번호 재설정] 인증번호 검증
     // 인증번호 확인 성공 시 DB 비밀번호를 새로운 값으로 변경
     @PostMapping("/reset-pw/verify-code")
     public ResponseEntity<?> verifyResetPwCode(@Valid @RequestBody ResetPwVerifyRequestDto requestDto, BindingResult bindingResult) {
