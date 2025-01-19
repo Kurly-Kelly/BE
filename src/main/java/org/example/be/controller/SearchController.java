@@ -3,9 +3,14 @@ package org.example.be.controller;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.be.domain.Product;
+import org.example.be.domain.dto.SearchResponseDto;
+import org.example.be.domain.dto.searchDto.SearchRequestDto;
 import org.example.be.service.SearchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,4 +42,16 @@ public class SearchController {
         List<String> suggestion = searchService.searchSuggestion(keyword);
         return ResponseEntity.ok(suggestion);
     }
+
+    // 검색 필터
+    // (3) 다중 필터 적용 (GET + @ModelAttribute)
+    //     /search/results/filter?keyword=apple&mainCategories=VEGETABLE&mainCategories=FRUIT&subCategories=LEAF_VEGETABLE&deliveries=EARLY_DELIVERY
+    @GetMapping("/results/filter")
+    public ResponseEntity<List<SearchResponseDto>> searchProduct(
+        @ModelAttribute SearchRequestDto request
+    ) {
+        List<SearchResponseDto> products = searchService.searchProductWithFilters(request);
+        return ResponseEntity.ok(products);
+    }
+
 }
