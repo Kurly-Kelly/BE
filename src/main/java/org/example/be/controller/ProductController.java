@@ -9,6 +9,8 @@ import org.example.be.domain.Product;
 import org.example.be.domain.SubCategory;
 import org.example.be.domain.dto.productDto.ProductResponseDto;
 import org.example.be.service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,16 +35,23 @@ public class ProductController {
 
     // MainCategory로 상품 목록 조회
     @GetMapping("/main-category/{mainCategory}")
-    public ResponseEntity<List<ProductResponseDto>> getProductsByMainCategory(@PathVariable MainCategory mainCategory) {
-        List<ProductResponseDto> products = productService.getProductsByMainCategory(mainCategory);
-        return ResponseEntity.ok(products);
+    public Page<ProductResponseDto> getProductsByCategory(
+            @PathVariable MainCategory mainCategory,
+            @RequestParam int page,
+            @RequestParam int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return productService.getProductsByMainCategory(mainCategory, pageRequest);
     }
 
     // MainCategory와 SubCategory로 상품 목록 조회
     @GetMapping("/category/{subCategory}")
-    public ResponseEntity<List<ProductResponseDto>> getProductsByMainAndSubCategory(@PathVariable SubCategory subCategory) {
-        List<ProductResponseDto> products = productService.getProductsBySubCategory(subCategory);
-        return ResponseEntity.ok(products);
+    public Page<ProductResponseDto> getProductsByMainAndSubCategory(
+            @PathVariable SubCategory subCategory,
+            @RequestParam int page,
+            @RequestParam int size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return productService.getProductsBySubCategory(subCategory, pageRequest);
     }
 
 
