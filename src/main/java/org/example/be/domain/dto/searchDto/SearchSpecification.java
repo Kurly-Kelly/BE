@@ -18,7 +18,7 @@ public class SearchSpecification {
 
             List<Predicate> predicates = new ArrayList<>();
 
-            // 1) 키워드(상품명) 검색 (부분일치, 대소문자 무시)
+            // 키워드(상품명) 검색 (대소문자 무시)
             if (StringUtils.hasText(request.getKeyword())) {
                 String kw = request.getKeyword().toLowerCase();
                 predicates.add(builder.like(
@@ -27,26 +27,26 @@ public class SearchSpecification {
                 ));
             }
 
-            // 2) 메인카테고리(in)
+            // 메인카테고리
             if (!CollectionUtils.isEmpty(request.getMainCategory())) {
                 // root.get("mainCategory")가 리스트 안에 하나라도 매칭
                 Expression<String> mainCatExp = root.get("mainCategory");
                 predicates.add(mainCatExp.in(request.getMainCategory()));
             }
 
-            // 3) 서브카테고리(in)
+            // 서브카테고리
             if (!CollectionUtils.isEmpty(request.getSubCategory())) {
                 Expression<String> subCatExp = root.get("subCategory");
                 predicates.add(subCatExp.in(request.getSubCategory()));
             }
 
-            // 4) 배송방식(in)
+            // 배송방식
             if (!CollectionUtils.isEmpty(request.getDelivery())) {
                 Expression<String> deliveryExp = root.get("delivery");
                 predicates.add(deliveryExp.in(request.getDelivery()));
             }
 
-            // 5) 가격 최소/최대
+            // 가격 최소/최대
             if (request.getPriceMin() != null) {
                 predicates.add(builder.greaterThanOrEqualTo(root.get("price"), request.getPriceMin()));
             }
@@ -54,7 +54,7 @@ public class SearchSpecification {
                 predicates.add(builder.lessThanOrEqualTo(root.get("price"), request.getPriceMax()));
             }
 
-            // 최종 AND로 묶음
+            // 최종 AND 로 묶음
             return builder.and(predicates.toArray(new Predicate[0]));
         };
     }

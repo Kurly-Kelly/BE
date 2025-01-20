@@ -16,9 +16,7 @@ public class SearchRequestDto {
     private List<String> subCategory;
     @Schema(example = "VEGETABLE")
     private List<String> mainCategory;
-    @Schema(example = "null")
     private Integer priceMin;
-    @Schema(example = "null")
     private Integer priceMax;
     @Schema(example = "GENERAL_DELIVERY")
     private List<String> delivery;

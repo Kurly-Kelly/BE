@@ -283,8 +283,8 @@ public class InitDB implements CommandLineRunner {
             Product product14 = createProduct("콩나물 시루 재배기",13900,"[5%쿠폰]콩나물 시루 재배기_2sizes",Delivery.SELLER_DELIVERY,45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl14);
             Product product15 = createProduct(" 올스텐 만능채칼 양배추",4900,"올스텐 만능채칼 양배추 오이 감자 당근 우엉 쏨땀 필러",Delivery.EARLY_DELIVERY,45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl15);
             Product product16 = createProduct(" 국내산 간편한 미니오이",13900,"국내산 간편한 미니오이 1kg 외 ",Delivery.GENERAL_DELIVERY,45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl16);
-            Product product17 = createProduct("달콤한 영암 신품종 호박고구마",13900,"달콤한 영암 신품종 호박고구마 호풍미 고구마 세척 3kg 5kg 당근고구마",Delivery.EARLY_DELIVERY,15900,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl17);
-            Product product18 = createProduct("해남 꿀밤 고구마 베니하루카",13900,"해남 꿀밤 고구마 베니하루카 [세척] 3kg 5kg 10kg 20kg 황금호박 고구마",Delivery.SELLER_DELIVERY,5700,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl18);
+            Product product17 = createProduct("달콤한 영암 신품종 호박고구마",13900,"달콤한 영암 신품종 호박고구마 호풍미 고구마 세척 3kg 5kg 당근고구마",Delivery.EARLY_DELIVERY,15900,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl17);
+            Product product18 = createProduct("해남 꿀밤 고구마 베니하루카",13900,"해남 꿀밤 고구마 베니하루카 [세척] 3kg 5kg 10kg 20kg 황금호박 고구마",Delivery.SELLER_DELIVERY,5700,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl18);
             Product product19 = createProduct("고추참치",36100,"고추참치 250g*10개",Delivery.GENERAL_DELIVERY,45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl19);
             Product product20 = createProduct("금빛 태양의맛 고추가루 매운맛 베트남산",22900,"금빛 태양의맛 고추가루 매운맛 베트남산 1kg ",Delivery.EARLY_DELIVERY,45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl20);
             Product product21 = createProduct("경북 부사 꿀사과 못난이",10900,"[경북 부사 꿀사과 못난이 2/3/5kg 택1",Delivery.SELLER_DELIVERY,45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl21);

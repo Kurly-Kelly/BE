@@ -21,13 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class SearchController {
     private final SearchService searchService;
 
-    // 검색 초기 화면(추천 및 급상승 검색어 화면)
-//    @GetMapping("")
-//    public ResponseEntity<List<String>> searchPage() {
-//        List<String> recommendations = searchService.getRecommendations();
-//        return ResponseEntity.ok(recommendations);
-//    }
-
     // 검색 결과 화면
     @GetMapping("/results")
     public ResponseEntity<List<Product>> searchProduct(@RequestParam("keyword") String keyword) {
@@ -44,8 +37,7 @@ public class SearchController {
     }
 
     // 검색 필터
-    // (3) 다중 필터 적용 (GET + @ModelAttribute)
-    //     /search/results/filter?keyword=apple&mainCategories=VEGETABLE&mainCategories=FRUIT&subCategories=LEAF_VEGETABLE&deliveries=EARLY_DELIVERY
+    // 다중 필터 적용 (GET + @ModelAttribute)
     @GetMapping("/results/filter")
     public ResponseEntity<List<SearchResponseDto>> searchProduct(
         @ModelAttribute SearchRequestDto request
