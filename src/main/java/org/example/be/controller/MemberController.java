@@ -15,12 +15,19 @@ import org.example.be.domain.dto.MemberDeleteRequestDto;
 import org.example.be.domain.dto.MemberDeleteResponseDto;
 import org.example.be.domain.dto.MemberRequestDto;
 import org.example.be.domain.dto.MemberResponseDto;
+import org.example.be.domain.dto.findDto.FindIdSendCodeRequestDto;
+import org.example.be.domain.dto.findDto.FindIdVerifyCodeRequestDto;
+import org.example.be.domain.dto.findDto.ResetPwNewPasswordRequestDto;
+import org.example.be.domain.dto.findDto.ResetPwSendCodeRequestDto;
+import org.example.be.domain.dto.findDto.ResetPwVerifyRequestDto;
 import org.example.be.repository.MemberRepository;
 import org.example.be.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -207,9 +214,15 @@ public class MemberController {
 
     // [아이디 찾기] 인증번호 발송
     @PostMapping("/find-id/send-code")
-    public ResponseEntity<?> sendFindIdCode(@RequestParam String name, @RequestParam String email) {
+    public ResponseEntity<?> sendFindIdCode(@RequestBody @Valid FindIdSendCodeRequestDto requestDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors()
+                .get(0)
+                .getDefaultMessage();
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
         try {
-            memberService.sendCodeToEmailForFind(name, email);
+            memberService.sendCodeToEmailForFind(requestDto.getName(), requestDto.getEmail());
             return ResponseEntity.ok("인증번호가 발송되었습니다.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -218,15 +231,80 @@ public class MemberController {
 
     // [아이디 찾기] 인증번호 확인 후, 아이디 반환
     @PostMapping("/find-id/verify-code")
-    public ResponseEntity<?> verifyFindIdCode(@RequestParam String name, @RequestParam String email, @RequestParam String code) {
+    public ResponseEntity<?> verifyFindIdCode(@RequestBody @Valid FindIdVerifyCodeRequestDto requestDto) {
         try {
-            boolean verified = memberService.verifyCodeForFindid(name, email, code);
+            boolean verified = memberService.verifyCodeForFindid(
+                requestDto.getName(),
+                requestDto.getEmail(),
+                requestDto.getCode());
             if (!verified) {
                 return ResponseEntity.badRequest().body("인증번호가 올바르지 않거나 만료되었습니다.");
             }
             // 인증 성공 시 -> username 조회
-            String username = memberService.findUsernameByNameAndEmail(name, email);
+            String username = memberService.findUsernameByNameAndEmail(requestDto.getName(), requestDto.getEmail());
             return ResponseEntity.ok(username);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // [비밀번호 재설정] 인증번호 발송
+    @PostMapping("/reset-pw/send-code")
+    public ResponseEntity<?> sendResetPwCode(@Valid @RequestBody ResetPwSendCodeRequestDto requestDto, BindingResult bindingResult) {
+        // 1. DTO 검증 오류 체크
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
+        try {
+            // 2. 서비스 로직 호출
+            memberService.sendCodeToEmailForResetPw(requestDto.getUsername(), requestDto.getEmail());
+            return ResponseEntity.ok("비밀번호 재설정 인증번호가 발송되었습니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // [비밀번호 재설정] 인증번호 검증
+    // 인증번호 확인 성공 시 DB 비밀번호를 새로운 값으로 변경
+    @PostMapping("/reset-pw/verify-code")
+    public ResponseEntity<?> verifyResetPwCode(@Valid @RequestBody ResetPwVerifyRequestDto requestDto, BindingResult bindingResult) {
+        // 1. DTO 검증 오류 체크
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+        try {
+            // 2. 인증번호 검증
+            boolean verified = memberService.verifyCodeForResetPw(
+                requestDto.getUsername(),
+                requestDto.getEmail(),
+                requestDto.getCode()
+            );
+            if (!verified) {
+                return ResponseEntity.badRequest().body("인증번호가 올바르지 않거나 만료되었습니다.");
+            }
+            return ResponseEntity.ok("인증번호 확인 성공");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/reset-pw/reset-password")
+    public ResponseEntity<?> resetPassword(
+        @Valid @RequestBody ResetPwNewPasswordRequestDto requestDto, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+        try {
+            memberService.resetPassword(
+                requestDto.getUsername(),
+                requestDto.getEmail(),
+                requestDto.getNewPassword()
+            );
+            return ResponseEntity.ok("비밀번호가 성공적으로 재설정되었습니다.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
