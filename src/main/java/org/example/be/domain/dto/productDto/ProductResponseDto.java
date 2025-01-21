@@ -33,6 +33,8 @@ public class ProductResponseDto {
     List<String> imageUrl; // 여러 이미지 URL 저장 가능
 
 
+
+
     public static ProductResponseDto fromEntity(Product product) {
         return ProductResponseDto.builder()
             .id(product.getId())
