@@ -29,9 +29,7 @@ public class CartController {
 
     // 장바구니에 상품 추가
     @PostMapping
-    public ResponseEntity<?> addToCart(
-        @RequestBody @Valid CartItemRequestDto cartItemRequestDto,
-        Principal principal) {
+    public ResponseEntity<?> addToCart(@RequestBody @Valid CartItemRequestDto cartItemRequestDto, Principal principal) {
 
         if (principal == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
