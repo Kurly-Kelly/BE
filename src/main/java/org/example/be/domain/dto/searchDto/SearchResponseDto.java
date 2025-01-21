@@ -1,5 +1,6 @@
-package org.example.be.domain.dto;
+package org.example.be.domain.dto.searchDto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,20 +27,19 @@ public class SearchResponseDto {
     ProductStatus productStatus;
     MainCategory mainCategory;
     SubCategory subCategory;
-    String imgURL;
+    List<String> imageUrl;
 
     public static SearchResponseDto from(Product product) {
-        return new SearchResponseDto(
-            product.getId(),
-            product.getName(),
-            product.getDescription(),
-            product.getPrice(),
-            product.getQuantity(),
-            product.getDelivery(),
-            product.getProductStatus(),
-            product.getMainCategory(),
-            product.getSubCategory(),
-            product.getImageUrls().toString()
-        );
+        return SearchResponseDto.builder()
+            .id(product.getId())
+            .name(product.getName())
+            .description(product.getDescription())
+            .price(product.getPrice())
+            .quantity(product.getQuantity())
+            .productStatus(product.getProductStatus())
+            .mainCategory(product.getMainCategory())
+            .subCategory(product.getSubCategory())
+            .imageUrl(product.getImageUrls())
+            .build();
     }
 }
