@@ -1,16 +1,16 @@
-package org.example.felessmartket_be.controller;
+package org.example.be.controller;
 
 
 import java.security.Principal;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.felessmartket_be.domain.Member;
-import org.example.felessmartket_be.domain.OrderItem;
-import org.example.felessmartket_be.domain.Orders;
-import org.example.felessmartket_be.domain.dto.orderDto.OrderItemRequestDto;
-import org.example.felessmartket_be.domain.dto.paymentDto.OrdersResponseDto;
-import org.example.felessmartket_be.service.OrdersService;
+import org.example.be.domain.Member;
+import org.example.be.domain.OrderItem;
+import org.example.be.domain.Orders;
+import org.example.be.domain.dto.paymentDto.OrderItemRequestDto;
+import org.example.be.domain.dto.paymentDto.OrdersResponseDto;
+import org.example.be.service.OrdersService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,4 +1,4 @@
-package org.example.felessmartket_be.service;
+package org.example.be.service;
 
 
 import java.io.InputStream;
@@ -15,16 +15,15 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.felessmartket_be.domain.Member;
-import org.example.felessmartket_be.domain.Orders;
-import org.example.felessmartket_be.domain.Payment;
-import org.example.felessmartket_be.domain.Product;
-import org.example.felessmartket_be.domain.dto.orderDto.OrderItemRequestDto;
-import org.example.felessmartket_be.domain.dto.orderDto.OrderItemRequestDto.OrderItemDto;
-import org.example.felessmartket_be.domain.dto.paymentDto.OrdersRequestDto;
-import org.example.felessmartket_be.domain.dto.paymentDto.PaymentRequestDto;
-import org.example.felessmartket_be.repository.OrdersRepository;
-import org.example.felessmartket_be.repository.PaymentRepository;
+import org.example.be.domain.Member;
+import org.example.be.domain.Orders;
+import org.example.be.domain.Payment;
+import org.example.be.domain.Product;
+import org.example.be.domain.dto.paymentDto.OrderItemRequestDto;
+import org.example.be.domain.dto.paymentDto.OrderItemRequestDto.OrderItemDto;
+import org.example.be.domain.dto.paymentDto.OrdersRequestDto;
+import org.example.be.repository.OrdersRepository;
+import org.example.be.repository.PaymentRepository;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package org.example.felessmartket_be.service;
+package org.example.be.service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,15 +6,15 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.felessmartket_be.domain.Member;
-import org.example.felessmartket_be.domain.OrderItem;
-import org.example.felessmartket_be.domain.Orders;
-import org.example.felessmartket_be.domain.Product;
-import org.example.felessmartket_be.domain.dto.orderDto.OrderItemRequestDto;
-import org.example.felessmartket_be.domain.dto.orderDto.OrderItemRequestDto.OrderItemDto;
-import org.example.felessmartket_be.repository.OrderItemRepository;
-import org.example.felessmartket_be.repository.OrdersRepository;
-import org.example.felessmartket_be.repository.ProductRepository;
+import org.example.be.domain.Member;
+import org.example.be.domain.OrderItem;
+import org.example.be.domain.Orders;
+import org.example.be.domain.Product;
+import org.example.be.domain.dto.paymentDto.OrderItemRequestDto;
+import org.example.be.domain.dto.paymentDto.OrderItemRequestDto.OrderItemDto;
+import org.example.be.repository.OrderItemRepository;
+import org.example.be.repository.OrdersRepository;
+import org.example.be.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 @Service

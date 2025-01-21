@@ -1,12 +1,11 @@
-package org.example.felessmartket_be.domain.dto.orderDto;
+package org.example.be.domain.dto.paymentDto;
 
-import jakarta.validation.constraints.NotBlank;
+
 import java.util.List;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.FieldDefaults;
+
 
 @Data
 public class OrderItemRequestDto {
@@ -23,6 +22,7 @@ public class OrderItemRequestDto {
     @Getter
     @Setter
     public static class ShippingDto {
+        private String zipCode;
         private String address;
         private String detailAddress;
         private String deliveryNote;

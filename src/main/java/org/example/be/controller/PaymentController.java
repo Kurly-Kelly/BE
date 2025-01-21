@@ -1,18 +1,18 @@
-package org.example.felessmartket_be.controller;
+package org.example.be.controller;
 
 import java.security.Principal;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.felessmartket_be.domain.Member;
-import org.example.felessmartket_be.domain.Orders;
-import org.example.felessmartket_be.domain.dto.orderDto.OrderItemRequestDto;
-import org.example.felessmartket_be.domain.dto.paymentDto.OrdersRequestDto;
-import org.example.felessmartket_be.domain.dto.paymentDto.OrdersResponseDto;
+import org.example.be.domain.Member;
+import org.example.be.domain.Orders;
+import org.example.be.domain.dto.paymentDto.OrderItemRequestDto;
+import org.example.be.domain.dto.paymentDto.OrdersRequestDto;
+import org.example.be.domain.dto.paymentDto.OrdersResponseDto;
 import org.example.felessmartket_be.domain.dto.paymentDto.PaymentRequestDto;
-import org.example.felessmartket_be.service.OrdersService;
-import org.example.felessmartket_be.service.PaymentService;
+import org.example.be.service.OrdersService;
+import org.example.be.service.PaymentService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
