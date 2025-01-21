@@ -6,9 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Delegate;
 import lombok.experimental.FieldDefaults;
-import org.example.be.domain.Delivery;
 import org.example.be.domain.MainCategory;
 import org.example.be.domain.Product;
 import org.example.be.domain.ProductStatus;
@@ -29,10 +27,8 @@ public class ProductResponseDto {
     ProductStatus productStatus;
     MainCategory mainCategory;
     SubCategory subCategory;
-    Delivery delivery;
+    String delivery;
     List<String> imageUrl; // 여러 이미지 URL 저장 가능
-
-
 
 
     public static ProductResponseDto fromEntity(Product product) {

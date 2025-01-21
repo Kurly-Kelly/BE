@@ -47,7 +47,7 @@ public class InitDB implements CommandLineRunner {
                 }
 
                 // 회원 생성 및 저장
-                Member member = createUser(i + "abc", "password" + i, "010-0000-000" + i, email);
+                Member member = createUser(i + "abc","abc" + i , "password" + i, "010-0000-000" + i, email);
                 em.persist(member);
 
                 // 장바구니 생성 및 저장
@@ -323,8 +323,8 @@ public class InitDB implements CommandLineRunner {
             return query.getSingleResult() > 0;
         }
 
-        private Member createUser(String name, String password, String phoneNumber, String email) {
-            return new Member(name, password, phoneNumber, email);
+        private Member createUser(String userName, String name, String password, String phoneNumber, String email) {
+            return new Member(userName, name, password, phoneNumber, email);
         }
 
         private Product createProduct(String name, Integer price, String description, Delivery delivery,

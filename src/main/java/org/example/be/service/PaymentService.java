@@ -9,14 +9,30 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.be.domain.Member;
 import org.example.be.domain.Orders;
+import org.example.be.domain.Payment;
+import org.example.be.domain.PaymentStatus;
+import org.example.be.domain.Product;
+import org.example.be.domain.Shipping;
+import org.example.be.domain.dto.paymentDto.OrderItemRequestDto;
+import org.example.be.domain.dto.paymentDto.OrderItemRequestDto.OrderItemDto;
+import org.example.be.domain.dto.paymentDto.OrderItemRequestDto.ShippingDto;
 import org.example.be.domain.dto.paymentDto.OrdersRequestDto;
 import org.example.be.repository.OrdersRepository;
+import org.example.be.repository.PaymentRepository;
+import org.example.be.repository.ShippingRepository;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 
@@ -29,6 +45,8 @@ public class PaymentService {
     private final long authCodeExpirationMillis = 300000;
     private final String widgetSecretKey = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
     private final OrdersService ordersService;
+    private final PaymentRepository paymentRepository;
+    private final ShippingRepository shippingRepository;
     private final OrdersRepository ordersRepository;
 
     public Boolean tempSave(OrdersRequestDto request) {
@@ -49,7 +67,7 @@ public class PaymentService {
         return requestedAmount.equals(amount);
     }
 
-    public JSONObject confirmPayment(String paymentKey, String orderId, String amount) {
+    public JSONObject confirmPayment(String paymentKey, String orderId, String amount, Member member) {
         JSONParser parser = new JSONParser();
         JSONObject obj = new JSONObject();
         obj.put("orderId", orderId);
@@ -63,6 +81,8 @@ public class PaymentService {
 
         HttpURLConnection connection = null;
         JSONObject jsonObject;
+
+
         try {
             // 토스페이먼츠 결제 승인 API URL
             URL url = new URL("https://api.tosspayments.com/v1/payments/confirm");
@@ -73,16 +93,8 @@ public class PaymentService {
             connection.setDoOutput(true);
 
             // JSON 데이터 전송
-//            try (OutputStream outputStream = connection.getOutputStream()) {
-//                outputStream.write(obj.toString().getBytes(StandardCharsets.UTF_8));
-//            }
-
-//            OutputStream outputStream = connection.getOutputStream();
-//            outputStream.write(obj.toString().getBytes("UTF-8"));
-
             try (OutputStream outputStream = connection.getOutputStream()) {
                 outputStream.write(obj.toString().getBytes(StandardCharsets.UTF_8));
-                outputStream.flush(); // 버퍼에 남은 데이터를 모두 보내기
             }
 
             int code = connection.getResponseCode();
@@ -95,16 +107,12 @@ public class PaymentService {
             jsonObject = (JSONObject) parser.parse(reader);
             responseStream.close();
 
+            log.info("isSuccess: {}", isSuccess);
+
             if (isSuccess) {
-                // 결제 승인 성공 시 데이터베이스 업데이트 및 Redis 삭제
-                Orders order = ordersService.findByOrderId(orderId);
-                if (order != null) {
-                    order.setOrderStatus("PAID");
-                    ordersRepository.save(order);
-                    redisService.deleteValues(orderId);
-                } else {
-                    log.warn("Order {} not found in database", orderId);
-                }
+                Orders newOrders = ordersService.createOrders(member, orderId);
+                createPaymentByOrder(newOrders);
+                return jsonObject;
             } else {
                 log.error("Payment confirmation failed: {}", jsonObject);
             }
@@ -121,6 +129,44 @@ public class PaymentService {
             }
         }
     }
+
+    private void createPaymentByOrder(Orders orders) {
+        Payment newPayment = Payment.createPayment(orders);
+        log.info("저장된 Payment: {}", paymentRepository.save(newPayment));
+    }
+
+    public void savePayment(OrderItemRequestDto request) {
+        Orders orders = ordersService.findByTossOrderId(request.getTossOrderId());
+        mappingPaymentInfo(ordersService.saveOrderItems(request, orders), request);
+        mappingShippingInfo(request, orders);
+    }
+
+
+    public void mappingPaymentInfo(Orders orders, OrderItemRequestDto request) {
+        Payment payment = paymentRepository.findByOrder(orders);
+        payment.setTotalAmount(request.getTotalPrice());
+        payment.setPaymentDate(LocalDateTime.now());
+        payment.setTossOrderId(request.getTossOrderId());
+        payment.setPaymentMethod(request.getPaymentMethod());
+        payment.setPaymentStatus(PaymentStatus.COMPLETED);
+        payment.setUsedPoint(request.getUsedPoint());
+        paymentRepository.save(payment);
+    }
+
+    private void mappingShippingInfo(OrderItemRequestDto request, Orders orders) {
+        Shipping shipping = Shipping.createShipping(orders);
+        ShippingDto deliveryInfo = request.getShipping();
+        shipping.setPostalCode(deliveryInfo.getZipCode());
+        shipping.setAddress(deliveryInfo.getAddress());
+        shipping.setDetailAddress(deliveryInfo.getDetailAddress());
+        shipping.setCountry("Korea");
+        shipping.setDeliveryNote(deliveryInfo.getDeliveryNote());
+        orders.setShipping(shipping);
+        shippingRepository.save(shipping);
+        ordersRepository.save(orders);
+    }
+
+
 
 
 }

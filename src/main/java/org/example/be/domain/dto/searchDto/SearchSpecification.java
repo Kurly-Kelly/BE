@@ -1,6 +1,5 @@
 package org.example.be.domain.dto.searchDto;
 
-import jakarta.persistence.criteria.JoinType;
 import java.util.ArrayList;
 import java.util.List;
 import org.example.be.domain.Product;
@@ -16,9 +15,6 @@ public class SearchSpecification {
 
     public static Specification<Product> searchWith(SearchRequestDto request) {
         return (root, query, builder) -> {
-
-            root.fetch("imageUrls", JoinType.LEFT);
-            query.distinct(true); // 중복 방지
 
             List<Predicate> predicates = new ArrayList<>();
 
