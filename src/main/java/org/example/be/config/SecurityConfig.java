@@ -67,7 +67,7 @@ public class SecurityConfig {
 //            .requestMatchers("/product/getProduct/**").permitAll()
             .requestMatchers("/search/**").permitAll()
             .requestMatchers("/payments/**").permitAll()
-
+            .requestMatchers("/**").permitAll()
             // Swagger 문서 접근 가능
             .requestMatchers(
                 "/swagger-ui/**",

@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.example.be.domain.DiscountStatus;
 import org.example.be.domain.MainCategory;
 import org.example.be.domain.Product;
 import org.example.be.domain.SubCategory;
@@ -60,8 +61,8 @@ public class ProductService {
     }
 
 
-    public List<ProductResponseDto> findTop10ByOrderByPriceDesc() {
-        List<Product> products = productRepository.findTop10ByOrderByPriceDesc();
+    public List<ProductResponseDto> findByDiscountStatus(DiscountStatus discountStatus) {
+        List<Product> products = productRepository.findByDiscountStatus(discountStatus);
         return products.stream().map(ProductResponseDto::fromEntity).toList();
     }
 

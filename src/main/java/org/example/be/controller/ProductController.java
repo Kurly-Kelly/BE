@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.example.be.domain.DiscountStatus;
 import org.example.be.domain.MainCategory;
 import org.example.be.domain.Product;
 import org.example.be.domain.SubCategory;
@@ -55,9 +56,9 @@ public class ProductController {
     }
 
 
-    @GetMapping("")
-    public ResponseEntity<List<ProductResponseDto>> findTop5ByOrderByPriceDesc() {
-        List<ProductResponseDto> products = productService.findTop10ByOrderByPriceDesc();
+    @GetMapping("discount/{discountStatus}")
+    public ResponseEntity<List<ProductResponseDto>> findTop5ByOrderByPriceDesc(@PathVariable DiscountStatus discountStatus) {
+        List<ProductResponseDto> products = productService.findByDiscountStatus(discountStatus);
         return ResponseEntity.ok(products);
     }
 

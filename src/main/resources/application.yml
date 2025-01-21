@@ -1,9 +1,16 @@
 spring:
+  servlet:
+    multipart:
+      enabled: true  # 멀티파트 파일 업로드를 활성화
+      location: c:\\upload  # 파일이 저장될 경로 (Windows에서 백슬래시 사용)
+      max-request-size: 300MB  # 최대 요청 크기
+      max-file-size: 50MB  # 최대 파일 크기
   datasource:
     url: ${MYSQL_URL}
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: create

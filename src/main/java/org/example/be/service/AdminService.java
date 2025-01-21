@@ -23,7 +23,7 @@ public class AdminService {
 
 
     public void saveProductWithImage(
-        List<MultipartFile> imageFile, ProductRequestDto productRequestDto) throws IOException {
+            List<MultipartFile> imageFile, ProductRequestDto productRequestDto) throws IOException {
         // 1. S3에 업로드하고 URL 반환
         List<String> imageUrl = s3Service.uploadFilesToS3(imageFile);
 

@@ -267,33 +267,33 @@ public class InitDB implements CommandLineRunner {
             imgUrl26.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A1%E1%86%B7%E1%84%80%E1%85%B2%E1%86%AF2-4.jpg");
             imgUrl26.add("https://marketkurry-bucket.s3.ap-northeast-2.amazonaws.com/%E1%84%80%E1%85%A1%E1%86%B7%E1%84%80%E1%85%B2%E1%86%AF2-5.jpg");
 
-            Product product1 = createProduct("해남 꿀고구마 베니하루카",7900,"해남 꿀고구마 베니하루카 2/3/5/10kg",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl1);
-            Product product2 = createProduct("포슬포슬 햇 수미감자",10000,"포슬포슬 햇 수미감자 3kg/5kg/10kg(국내산)",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl2);
-            Product product3 = createProduct("제주 구좌 당근",5900,"제주 구좌 당근 2/3/5kg (국내산)",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl3);
-            Product product4 = createProduct("매일야채 고농축 당근의힘",23900,"매일야채 고농축 당근의힘 125ml*24팩",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl4);
-            Product product5 = createProduct("당근 라페 프랑스식 샐러드",9900,"당근 라페 프랑스식 샐러드 200g",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl5);
-            Product product6 = createProduct("산지직송 제주 구좌 햇 당근 흙당근",23900,"산지직송 제주 구좌 햇 당근 흙당근 국산 국내산 제철 5kg 10kg 주스용 요리용 업소용",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl6);
-            Product product7 = createProduct("반건조 스위트 고구마 70g",27900,"국민 영양간식 고구마 농장",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl7);
-            Product product8 = createProduct("황성주박사의 국산콩 두유 검은콩 고구마",27900,"황성주박사의 국산콩 두유 검은콩 고구마 190ml 48개",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl8);
-            Product product9 = createProduct("인기간식 감자스낵 과자세트",19900,"인기있는 감자 스낵으로 알차게 구성",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl9);
-            Product product10 = createProduct("해풍월동 시금치 씨앗 채소 텃밭 가꾸기",3000,"뿌리가 붉은 토종 월동 시금치",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl10);
-            Product product11 = createProduct("시금치 페투치네 파스타 페투치니 면",5300,"시금치 페투치네 파스타 페투치니 면",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl11);
-            Product product12 = createProduct("국내산 싱싱한 시금치",9900,"국내산 싱싱한 시금치 1kg 외",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl12);
-            Product product13 = createProduct("무농약 모듬 쌈채소 샐러드",13900,"무농약 모듬 쌈채소 샐러드 9종내외 500g 1kg(당일수확)",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl13);
-            Product product14 = createProduct("콩나물 시루 재배기",13900,"[5%쿠폰]콩나물 시루 재배기_2sizes",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl14);
-            Product product15 = createProduct(" 올스텐 만능채칼 양배추",4900,"올스텐 만능채칼 양배추 오이 감자 당근 우엉 쏨땀 필러",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl15);
-            Product product16 = createProduct(" 국내산 간편한 미니오이",13900,"국내산 간편한 미니오이 1kg 외 ",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl16);
-            Product product17 = createProduct("달콤한 영암 신품종 호박고구마",13900,"달콤한 영암 신품종 호박고구마 호풍미 고구마 세척 3kg 5kg 당근고구마",15900,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl17);
-            Product product18 = createProduct("해남 꿀밤 고구마 베니하루카",13900,"해남 꿀밤 고구마 베니하루카 [세척] 3kg 5kg 10kg 20kg 황금호박 고구마",5700,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl18);
-            Product product19 = createProduct("고추참치",36100,"고추참치 250g*10개",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl19);
-            Product product20 = createProduct("금빛 태양의맛 고추가루 매운맛 베트남산",22900,"금빛 태양의맛 고추가루 매운맛 베트남산 1kg ",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl20);
-            Product product21 = createProduct("경북 부사 꿀사과 못난이",10900,"[경북 부사 꿀사과 못난이 2/3/5kg 택1",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl21);
-            Product product22 = createProduct("콩나물 시루 재배기",13900,"[5%쿠폰]콩나물 시루 재배기_2sizes",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl22);
-            Product product23 = createProduct("국산 도라지배즙 배즙 1박스",17900,"국산 도라지배즙 배즙 1박스 30포 ",45,MainCategory.FRUIT,SubCategory.APPLE_PEAR,imgUrl23);
-            Product product24 = createProduct("짱구는 못말려 배도라지스틱",14900,"짱구는 못말려 배도라지스틱 20포  ",45,MainCategory.FRUIT,SubCategory.APPLE_PEAR,imgUrl24);
-            Product product25 = createProduct(" 제주도 산지직송 새콤달콤 노지감귤",11900,"제주도 산지직송 새콤달콤 노지감귤 4.5kg 9kg",45,MainCategory.FRUIT,SubCategory.CITRUS,imgUrl25);
-            Product product26 = createProduct(" 산지직송 무농약 친환경 제주 감귤",95900," 산지직송 무농약 친환경 제주 감귤 로얄과 10kg ",45,MainCategory.FRUIT,SubCategory.CITRUS,imgUrl26);
-            Product product27 = createProduct("  제주 생선 3종", 36900," 제주 생선 3종, 법성포 굴비 골라담기",45,MainCategory.SEAFOOD,SubCategory.FISH,imgUrl27);
+            Product product1 = createProduct("해남 꿀고구마 베니하루카",7900,"해남 꿀고구마 베니하루카 2/3/5/10kg",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl1,35,DiscountStatus.FINAL_SALE);
+            Product product2 = createProduct("포슬포슬 햇 수미감자",10000,"포슬포슬 햇 수미감자 3kg/5kg/10kg(국내산)",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl2,35,DiscountStatus.FINAL_SALE);
+            Product product3 = createProduct("제주 구좌 당근",5900,"제주 구좌 당근 2/3/5kg (국내산)",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl3,35,DiscountStatus.FINAL_SALE);
+            Product product4 = createProduct("매일야채 고농축 당근의힘",23900,"매일야채 고농축 당근의힘 125ml*24팩",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl4,35,DiscountStatus.FINAL_SALE);
+            Product product5 = createProduct("당근 라페 프랑스식 샐러드",9900,"당근 라페 프랑스식 샐러드 200g",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl5,35,DiscountStatus.FINAL_SALE);
+            Product product6 = createProduct("산지직송 제주 구좌 햇 당근 흙당근",23900,"산지직송 제주 구좌 햇 당근 흙당근 국산 국내산 제철 5kg 10kg 주스용 요리용 업소용",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl6,null,null);
+            Product product7 = createProduct("반건조 스위트 고구마 70g",27900,"국민 영양간식 고구마 농장",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl7,null,null);
+            Product product8 = createProduct("황성주박사의 국산콩 두유 검은콩 고구마",27900,"황성주박사의 국산콩 두유 검은콩 고구마 190ml 48개",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl8,null,null);
+            Product product9 = createProduct("인기간식 감자스낵 과자세트",19900,"인기있는 감자 스낵으로 알차게 구성",45,MainCategory.VEGETABLE,SubCategory.ROOT_VEGETABLE,imgUrl9,null,null);
+            Product product10 = createProduct("해풍월동 시금치 씨앗 채소 텃밭 가꾸기",3000,"뿌리가 붉은 토종 월동 시금치",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl10,null,null);
+            Product product11 = createProduct("시금치 페투치네 파스타 페투치니 면",5300,"시금치 페투치네 파스타 페투치니 면",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl11,null,null);
+            Product product12 = createProduct("국내산 싱싱한 시금치",9900,"국내산 싱싱한 시금치 1kg 외",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl12,null,null);
+            Product product13 = createProduct("무농약 모듬 쌈채소 샐러드",13900,"무농약 모듬 쌈채소 샐러드 9종내외 500g 1kg(당일수확)",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl13,null,null);
+            Product product14 = createProduct("콩나물 시루 재배기",13900,"[5%쿠폰]콩나물 시루 재배기_2sizes",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl14,null,null);
+            Product product15 = createProduct(" 올스텐 만능채칼 양배추",4900,"올스텐 만능채칼 양배추 오이 감자 당근 우엉 쏨땀 필러",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl15,null,null);
+            Product product16 = createProduct(" 국내산 간편한 미니오이",13900,"국내산 간편한 미니오이 1kg 외 ",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl16,null,null);
+            Product product17 = createProduct("달콤한 영암 신품종 호박고구마",13900,"달콤한 영암 신품종 호박고구마 호풍미 고구마 세척 3kg 5kg 당근고구마",15900,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl17,null,null);
+            Product product18 = createProduct("해남 꿀밤 고구마 베니하루카",13900,"해남 꿀밤 고구마 베니하루카 [세척] 3kg 5kg 10kg 20kg 황금호박 고구마",5700,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl18,null,null);
+            Product product19 = createProduct("고추참치",36100,"고추참치 250g*10개",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl19,null,null);
+            Product product20 = createProduct("금빛 태양의맛 고추가루 매운맛 베트남산",22900,"금빛 태양의맛 고추가루 매운맛 베트남산 1kg ",45,MainCategory.VEGETABLE,SubCategory.GREEN_VEGETABLE,imgUrl20,null,null);
+            Product product21 = createProduct("경북 부사 꿀사과 못난이",10900,"[경북 부사 꿀사과 못난이 2/3/5kg 택1",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl21,null,null);
+            Product product22 = createProduct("콩나물 시루 재배기",13900,"[5%쿠폰]콩나물 시루 재배기_2sizes",45,MainCategory.VEGETABLE,SubCategory.LEAF_VEGETABLE,imgUrl22,null,null);
+            Product product23 = createProduct("국산 도라지배즙 배즙 1박스",17900,"국산 도라지배즙 배즙 1박스 30포 ",45,MainCategory.FRUIT,SubCategory.APPLE_PEAR,imgUrl23,null,null);
+            Product product24 = createProduct("짱구는 못말려 배도라지스틱",14900,"짱구는 못말려 배도라지스틱 20포  ",45,MainCategory.FRUIT,SubCategory.APPLE_PEAR,imgUrl24,null,null);
+            Product product25 = createProduct(" 제주도 산지직송 새콤달콤 노지감귤",11900,"제주도 산지직송 새콤달콤 노지감귤 4.5kg 9kg",45,MainCategory.FRUIT,SubCategory.CITRUS,imgUrl25,null,null);
+            Product product26 = createProduct(" 산지직송 무농약 친환경 제주 감귤",95900," 산지직송 무농약 친환경 제주 감귤 로얄과 10kg ",45,MainCategory.FRUIT,SubCategory.CITRUS,imgUrl26,null,null);
+            Product product27 = createProduct("  제주 생선 3종", 36900," 제주 생선 3종, 법성포 굴비 골라담기",45,MainCategory.SEAFOOD,SubCategory.FISH,imgUrl27,null,null);
 
             List<Product> products = List.of(
                 product1, product2, product3, product4, product5, product6, product7,
@@ -328,7 +328,7 @@ public class InitDB implements CommandLineRunner {
         }
 
         private Product createProduct(String name, Integer price, String description,
-            Integer quantity, MainCategory mainCategory, SubCategory subCategory, List<String> imgURL) {
+            Integer quantity, MainCategory mainCategory, SubCategory subCategory, List<String> imgURL,Integer Discount, DiscountStatus discountStatus) {
             Product product = new Product();
             product.setName(name);
             product.setPrice(price);
@@ -337,6 +337,8 @@ public class InitDB implements CommandLineRunner {
             product.setMainCategory(mainCategory);
             product.setSubCategory(subCategory);
             product.setImageUrls(imgURL);
+            product.setDiscount(Discount);
+            product.setDiscountStatus(discountStatus);
             return product;
         }
     }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequestMapping("/admin")
@@ -26,8 +27,8 @@ public class AdminController {
 
     @PostMapping("/saveProduct")
     public ResponseEntity<String> saveProduct(
-        @ModelAttribute ProductRequestDto productRequestDto, // ProductRequestDto는 ModelAttribute로 받기
-        @RequestParam("imgURL") List<MultipartFile> imageFile // 이미지 파일은 RequestParam으로 받기
+            @ModelAttribute ProductRequestDto productRequestDto, // ProductRequestDto는 ModelAttribute로 받기
+            @RequestParam("imgURL") List<MultipartFile> imageFile // 이미지 파일은 RequestParam으로 받기
     ) {
         try {
 

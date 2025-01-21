@@ -24,6 +24,7 @@ public class ProductResponseDto {
     String description;
     Integer price;
     Integer quantity;
+    Integer discount;
     ProductStatus productStatus;
     MainCategory mainCategory;
     SubCategory subCategory;
@@ -37,6 +38,7 @@ public class ProductResponseDto {
             .description(product.getDescription())
             .price(product.getPrice())
             .quantity(product.getQuantity())
+            .discount(product.getDiscount())
             .productStatus(product.getProductStatus())
             .mainCategory(product.getMainCategory())
             .subCategory(product.getSubCategory())
