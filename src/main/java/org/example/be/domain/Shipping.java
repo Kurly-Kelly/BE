@@ -10,13 +10,17 @@ import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @NoArgsConstructor
 @Entity
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Setter
+@Getter
 public class Shipping {
 
     @Id
@@ -35,6 +39,10 @@ public class Shipping {
     String deliveryNote; //배송노트
     LocalDateTime createdAt; //날짜
 
-
+    public static Shipping createShipping(Orders orders) {
+        Shipping shipping = new Shipping();
+        shipping.setOrder(orders);
+        return shipping;
+    }
 
 }

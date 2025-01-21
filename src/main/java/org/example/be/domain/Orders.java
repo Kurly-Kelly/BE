@@ -38,8 +38,7 @@ public class Orders {
     @JoinColumn(name = "shipping_id")
     Shipping shipping;
 
-    @OneToOne
-    @JoinColumn(name = "payment_id")
+    @OneToOne(mappedBy = "order")
     Payment payment;
 
     @ManyToOne

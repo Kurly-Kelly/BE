@@ -37,14 +37,14 @@ public class OrdersService {
         return ordersRepository.findByTossOrderId(TossOrderId);
     }
 
-    public void saveOrderItems(OrderItemRequestDto request, Orders orders) {
+    public Orders saveOrderItems(OrderItemRequestDto request, Orders orders) {
         Map<Product, Integer> products = transProduct(request);
         for (Product product : products.keySet()) {
             OrderItem newOrderItem = OrderItem.createOrderItem(orders, product, products.get(product));
             orderItemRepository.save(newOrderItem);
         }
         orders.updateTotalPrice(request.getTotalPrice());
-        ordersRepository.save(orders);
+        return ordersRepository.save(orders);
     }
 
     public Map<Product, Integer> transProduct(OrderItemRequestDto request) {

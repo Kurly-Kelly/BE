@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -27,7 +28,8 @@ public class Payment {
     @Column(name = "payment_id")
     Integer id;
 
-    @OneToOne(mappedBy = "payment")
+    @OneToOne
+    @JoinColumn(name = "order_id")
     Orders order;
 
     @Column(name = "toss_order_id")
@@ -42,10 +44,13 @@ public class Payment {
     @Column(name = "total_amount")
     Integer totalAmount;
 
+    @Column(name = "used_Point")
+    Integer usedPoint;
+
     LocalDateTime paymentDate; //결제 시간
 
-    @Enumerated(EnumType.STRING)
-    PaymentMethod paymentMethod; //결제 방법(카카오 페이, 휴대폰 번호, 간편결제, 신용카드)
+//    @Enumerated(EnumType.STRING)
+    String paymentMethod; //결제 방법(카카오 페이, 휴대폰 번호, 간편결제, 신용카드)
 
     @Enumerated(EnumType.STRING)
     PaymentStatus paymentStatus; //결제 상태(결제 완료, 결제 대기, 결제 실패)

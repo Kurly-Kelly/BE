@@ -97,7 +97,7 @@ public class PaymentController {
         if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        paymentService.savePayment(member, requestDto);
+        paymentService.savePayment(requestDto);
         return ResponseEntity.ok(Map.of("result", "success"));
     }
 

@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +19,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.be.domain.Member;
 import org.example.be.domain.Orders;
 import org.example.be.domain.Payment;
+import org.example.be.domain.PaymentStatus;
 import org.example.be.domain.Product;
+import org.example.be.domain.Shipping;
 import org.example.be.domain.dto.paymentDto.OrderItemRequestDto;
 import org.example.be.domain.dto.paymentDto.OrderItemRequestDto.OrderItemDto;
+import org.example.be.domain.dto.paymentDto.OrderItemRequestDto.ShippingDto;
 import org.example.be.domain.dto.paymentDto.OrdersRequestDto;
 import org.example.be.repository.OrdersRepository;
 import org.example.be.repository.PaymentRepository;
+import org.example.be.repository.ShippingRepository;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +46,8 @@ public class PaymentService {
     private final String widgetSecretKey = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
     private final OrdersService ordersService;
     private final PaymentRepository paymentRepository;
+    private final ShippingRepository shippingRepository;
+    private final OrdersRepository ordersRepository;
 
     public Boolean tempSave(OrdersRequestDto request) {
         try{
@@ -128,11 +135,36 @@ public class PaymentService {
         log.info("저장된 Payment: {}", paymentRepository.save(newPayment));
     }
 
-    public void savePayment(Member member, OrderItemRequestDto request) {
+    public void savePayment(OrderItemRequestDto request) {
         Orders orders = ordersService.findByTossOrderId(request.getTossOrderId());
-        ordersService.saveOrderItems(request, orders);
+        mappingPaymentInfo(ordersService.saveOrderItems(request, orders), request);
+        mappingShippingInfo(request, orders);
     }
 
+
+    public void mappingPaymentInfo(Orders orders, OrderItemRequestDto request) {
+        Payment payment = paymentRepository.findByOrder(orders);
+        payment.setTotalAmount(request.getTotalPrice());
+        payment.setPaymentDate(LocalDateTime.now());
+        payment.setTossOrderId(request.getTossOrderId());
+        payment.setPaymentMethod(request.getPaymentMethod());
+        payment.setPaymentStatus(PaymentStatus.COMPLETED);
+        payment.setUsedPoint(request.getUsedPoint());
+        paymentRepository.save(payment);
+    }
+
+    private void mappingShippingInfo(OrderItemRequestDto request, Orders orders) {
+        Shipping shipping = Shipping.createShipping(orders);
+        ShippingDto deliveryInfo = request.getShipping();
+        shipping.setPostalCode(deliveryInfo.getZipCode());
+        shipping.setAddress(deliveryInfo.getAddress());
+        shipping.setDetailAddress(deliveryInfo.getDetailAddress());
+        shipping.setCountry("Korea");
+        shipping.setDeliveryNote(deliveryInfo.getDeliveryNote());
+        orders.setShipping(shipping);
+        shippingRepository.save(shipping);
+        ordersRepository.save(orders);
+    }
 
 
 

@@ -16,6 +16,7 @@ public class OrderItemRequestDto {
     private String paymentMethod;
     private Integer totalPrice;
     private ShippingDto shipping;
+    private Integer usedPoint;
     private List<OrderItemDto> orderItems;
 
 
