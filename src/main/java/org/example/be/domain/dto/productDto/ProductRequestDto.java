@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.example.be.domain.Delivery;
 import org.example.be.domain.MainCategory;
 import org.example.be.domain.Product;
 import org.example.be.domain.ProductStatus;
@@ -21,7 +22,7 @@ public class ProductRequestDto {
     Integer price;
     Integer quantity;
     ProductStatus productStatus;
-
+    Delivery delivery;
     MainCategory mainCategory;
     SubCategory subCategory;
 
@@ -34,6 +35,7 @@ public class ProductRequestDto {
             productRequestDto.getName(),
             productRequestDto.getDescription(),
             productRequestDto.getPrice(),
+            productRequestDto.getDelivery(),
             productRequestDto.getQuantity(),
             ProductStatus.available,
             productRequestDto.getMainCategory(),

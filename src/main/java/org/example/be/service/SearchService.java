@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.be.domain.Product;
+import org.example.be.domain.dto.SearchResponseDto;
+import org.example.be.domain.dto.searchDto.SearchRequestDto;
+import org.example.be.domain.dto.searchDto.SearchSpecification;
 import org.example.be.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -28,5 +31,13 @@ public class SearchService {
             .collect(Collectors.toList());
     }
 
+    // 검색 필터 옵션
+    // "키워드 + 복수 필터" 적용
+    public List<SearchResponseDto> searchProductWithFilters(SearchRequestDto request) {
+        return productRepository.findAll(SearchSpecification.searchWith(request))
+            .stream()
+            .map(SearchResponseDto::from)
+            .collect(Collectors.toList());
+    }
 
 }

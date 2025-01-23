@@ -3,7 +3,8 @@ package org.example.be.exception;
 import lombok.Getter;
 
 @Getter
-public class CustomException extends RuntimeException {
+public class
+CustomException extends RuntimeException {
 
     ExceptionType type;
 

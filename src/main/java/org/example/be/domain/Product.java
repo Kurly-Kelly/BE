@@ -36,6 +36,8 @@ public class Product {
     String name;
     String description;
     Integer price;
+    @Enumerated(EnumType.STRING)
+    Delivery delivery;
     Integer quantity;
     @Enumerated(EnumType.STRING)
     ProductStatus productStatus;

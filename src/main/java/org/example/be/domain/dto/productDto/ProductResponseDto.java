@@ -27,6 +27,7 @@ public class ProductResponseDto {
     ProductStatus productStatus;
     MainCategory mainCategory;
     SubCategory subCategory;
+    String delivery;
     List<String> imageUrl; // 여러 이미지 URL 저장 가능
 
 
