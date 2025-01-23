@@ -38,6 +38,7 @@ public class ProductRequestDto {
             ProductStatus.available,
             productRequestDto.getMainCategory(),
             productRequestDto.getSubCategory(),
+            null,
             null
         );
     }

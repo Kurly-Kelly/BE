@@ -1,5 +1,6 @@
 package org.example.be.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -51,6 +53,9 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     List<Orders> orderList;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<LikeItem> likeItems = new ArrayList<>();
 
     public Member(String username, String password, String phoneNumber, String email) {
         this.username = username;
