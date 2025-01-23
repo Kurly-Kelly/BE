@@ -6,6 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.example.be.domain.*;
+import org.example.be.domain.Delivery;
+import org.example.be.domain.MainCategory;
+import org.example.be.domain.Product;
+import org.example.be.domain.ProductStatus;
+import org.example.be.domain.SubCategory;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Setter
@@ -19,6 +24,7 @@ public class ProductRequestDto {
     Integer quantity;
     Integer discount;
     ProductStatus productStatus;
+    Delivery delivery;
     DiscountStatus discountstatus;  // 필드명 수정
     MainCategory mainCategory;
     SubCategory subCategory;
@@ -31,10 +37,11 @@ public class ProductRequestDto {
                 productRequestDto.getName(),
                 productRequestDto.getDescription(),
                 productRequestDto.getPrice(),
+                productRequestDto.getDelivery(),
                 productRequestDto.getQuantity(),
                 productRequestDto.getDiscount(),
                 productRequestDto.getDiscountstatus(),
-                ProductStatus.available,
+                productRequestDto.getProductStatus(),
                 productRequestDto.getMainCategory(),
                 productRequestDto.getSubCategory(),
                 null

@@ -78,6 +78,7 @@ public class SecurityConfig {
 
             // 인증이 필요한 URL 설정
             .requestMatchers("/cart/**", "/users/me").authenticated()
+            .requestMatchers("/orders/**").authenticated()
 
             // 그 외 모든 요청은 인증 필요
             .anyRequest().authenticated()
