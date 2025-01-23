@@ -11,6 +11,8 @@ import org.example.be.domain.Product;
 import org.example.be.domain.ProductStatus;
 import org.example.be.domain.SubCategory;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,7 +28,7 @@ public class SearchResponseDto {
     ProductStatus productStatus;
     MainCategory mainCategory;
     SubCategory subCategory;
-    String imgURL;
+    List<String> imageUrls;
 
     public static SearchResponseDto from(Product product) {
         return new SearchResponseDto(
@@ -39,7 +41,7 @@ public class SearchResponseDto {
             product.getProductStatus(),
             product.getMainCategory(),
             product.getSubCategory(),
-            product.getImageUrls().toString()
+            product.getImageUrls()
         );
     }
 }

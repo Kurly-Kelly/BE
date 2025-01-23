@@ -24,11 +24,12 @@ public class ProductResponseDto {
     String description;
     Integer price;
     Integer quantity;
+    Integer discount;
     ProductStatus productStatus;
     MainCategory mainCategory;
     SubCategory subCategory;
     String delivery;
-    List<String> imageUrl; // 여러 이미지 URL 저장 가능
+    List<String> imageUrls; // 여러 이미지 URL 저장 가능
 
 
     public static ProductResponseDto fromEntity(Product product) {
@@ -38,10 +39,11 @@ public class ProductResponseDto {
             .description(product.getDescription())
             .price(product.getPrice())
             .quantity(product.getQuantity())
+            .discount(product.getDiscount())
             .productStatus(product.getProductStatus())
             .mainCategory(product.getMainCategory())
             .subCategory(product.getSubCategory())
-            .imageUrl(product.getImageUrls())
+                .imageUrls(product.getImageUrls())
             .build();
     }
 }
