@@ -68,6 +68,10 @@ public class ProductController {
 //        return ResponseEntity.ok(randomProducts);
 //    }
 
-
+    @GetMapping("")
+    public ResponseEntity<List<ProductResponseDto>> findTop5ByOrderByPriceDesc() {
+        List<ProductResponseDto> products = productService.findTop10ByOrderByPriceDesc();
+        return ResponseEntity.ok(products);
+    }
 
 }

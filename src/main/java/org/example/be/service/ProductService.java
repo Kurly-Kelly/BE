@@ -65,6 +65,9 @@ public class ProductService {
         List<Product> products = productRepository.findByDiscountStatus(discountStatus);
         return products.stream().map(ProductResponseDto::fromEntity).toList();
     }
-
+    public List<ProductResponseDto> findTop10ByOrderByPriceDesc() {
+        List<Product> products = productRepository.findTop10ByOrderByPriceDesc();
+        return products.stream().map(ProductResponseDto::fromEntity).toList();
+    }
 
 }
