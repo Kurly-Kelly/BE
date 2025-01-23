@@ -45,5 +45,4 @@ public class SearchController {
         List<SearchResponseDto> products = searchService.searchProductWithFilters(request);
         return ResponseEntity.ok(products);
     }
-
 }

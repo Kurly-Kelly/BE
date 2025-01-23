@@ -39,6 +39,11 @@ public class Product {
     @Enumerated(EnumType.STRING)
     Delivery delivery;
     Integer quantity;
+    Integer discount;
+
+    @Enumerated(EnumType.STRING)
+    DiscountStatus discountStatus;
+
     @Enumerated(EnumType.STRING)
     ProductStatus productStatus;
 
