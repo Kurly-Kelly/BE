@@ -84,4 +84,9 @@ public class LikeItemService {
             return false;
         }
     }
+
+    // 이미 찜했는지 확인하는 메서드
+    public boolean existsByMemberUsernameAndProductId(String username, Long productId) {
+        return likeItemRepository.existsByMemberUsernameAndProductId(username, productId);
+    }
 }

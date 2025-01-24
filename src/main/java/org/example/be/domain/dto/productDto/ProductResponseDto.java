@@ -43,7 +43,7 @@ public class ProductResponseDto {
             .productStatus(product.getProductStatus())
             .mainCategory(product.getMainCategory())
             .subCategory(product.getSubCategory())
-                .imageUrls(product.getImageUrls())
+            .imageUrls(product.getImageUrls())
             .build();
     }
 }

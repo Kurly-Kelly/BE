@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LikeItemRepository extends JpaRepository<LikeItem, Long> {
 
+    boolean existsByMemberUsernameAndProductId(String username, Long productId);
     // 상품 ID를 기준으로 상품의 좋아요 수
     long countByProductId(Long productId);
 

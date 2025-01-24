@@ -9,6 +9,7 @@ import org.example.be.domain.Product;
 import org.example.be.domain.dto.LikeDto.LikeRequestDto;
 import org.example.be.domain.dto.LikeDto.LikeResponseDto;
 import org.example.be.domain.dto.productDto.ProductResponseDto;
+import org.example.be.repository.LikeItemRepository;
 import org.example.be.service.LikeItemService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,10 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LikeItemController {
     LikeItemService likeItemService;
-
     // 좋아요 추가
     // POST /like
-
     @PostMapping
     public ResponseEntity<LikeResponseDto> addLike(@RequestBody LikeRequestDto request) {
         boolean success = likeItemService.addLike(request.getUsername(), request.getProductId());
@@ -72,5 +72,11 @@ public class LikeItemController {
             .map(ProductResponseDto::fromEntity)
             .collect(Collectors.toList());
         return ResponseEntity.ok(productDtos);
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<Boolean> isProductLiked(@RequestParam String username, @RequestParam Long productId) {
+        boolean liked = likeItemService.existsByMemberUsernameAndProductId(username, productId);
+        return ResponseEntity.ok(liked);
     }
 }
