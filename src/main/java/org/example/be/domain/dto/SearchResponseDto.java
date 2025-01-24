@@ -29,6 +29,7 @@ public class SearchResponseDto {
     MainCategory mainCategory;
     SubCategory subCategory;
     List<String> imageUrls;
+    Integer discount;
 
     public static SearchResponseDto from(Product product) {
         return new SearchResponseDto(
@@ -41,7 +42,8 @@ public class SearchResponseDto {
             product.getProductStatus(),
             product.getMainCategory(),
             product.getSubCategory(),
-            product.getImageUrls()
+            product.getImageUrls(),
+            product.getDiscount()
         );
     }
 }
