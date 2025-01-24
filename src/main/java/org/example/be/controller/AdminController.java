@@ -24,7 +24,6 @@ public class AdminController {
 
     AdminService adminService;
 
-
     @PostMapping("/saveProduct")
     public ResponseEntity<String> saveProduct(
             @ModelAttribute ProductRequestDto productRequestDto, // ProductRequestDto는 ModelAttribute로 받기

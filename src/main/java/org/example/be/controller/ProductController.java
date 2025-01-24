@@ -62,6 +62,7 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+
 //    @GetMapping("/random")
 //    public ResponseEntity<List<Product>> getRandomProducts() {
 //        List<Product> randomProducts = productService.getRandomProducts();
