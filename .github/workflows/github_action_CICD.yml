@@ -77,7 +77,7 @@ jobs:
 
       # (2) SSH 액션으로 원격 서버에 접속하여 Docker 이미지를 pull & docker-compose 실행
       - name: Docker compose
-        uses: yoonhyojin1016/ssh-action@master
+        uses: appleboy/ssh-action@master
         with:
           username: ubuntu
           host: ${{ secrets.KURLYKELLY_SERVER_IP }}
@@ -98,7 +98,7 @@ jobs:
 
       # (4) Nginx upstream 변경 (현재 blue->green 또는 green->blue로 스위칭)
       - name: Change nginx upstream
-        uses: yoonhyojin1016/ssh-action@master
+        uses: appleboy/ssh-action@master
         with:
           username: ubuntu
           host: ${{ secrets.KURLYKELLY_SERVER_IP }}
@@ -109,7 +109,7 @@ jobs:
 
       # (5) 기존 서버(현재 Upstream) 컨테이너 중지 & 제거
       - name: Stop current server
-        uses: yoonhyojin1016/ssh-action@master
+        uses: appleboy/ssh-action@master
         with:
           username: ubuntu
           host: ${{ secrets.KURLYKELLY_SERVER_IP }}
