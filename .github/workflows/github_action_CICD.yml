@@ -1,0 +1,129 @@
+name: CICD
+
+# master 브랜치에 push, PR 이벤트 발생시 동작.
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # (1) 프로그램 빌드 (Java 빌드) 1) Java 및 Docker 빌드를 위한 환경 설정
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # (1) 프로그램 빌드 (Java 빌드) 2) Java 빌드를 위한 ./gradlew 파일 권한 변경
+      - name: Run chmod to make gradlew executable
+        run: chmod +x ./gradlew
+
+      # (1) 프로그램 빌드 (Java 빌드) 3) Java Gradle 빌드
+      - name: Spring Boot Build
+        run: ./gradlew clean build
+
+      # (2) Docker 이미지 빌드 1) Docker Hub 에 Login
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # (2) Docker 이미지 빌드 2) DockerFile 을 기반으로 Docker Image 빌드
+      - name: Build Docker
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/kurlykelly_server .
+
+      # (2) Docker 이미지 빌드 3) Docker Hub 에 빌드된 이미지 push
+      - name: Push Docker
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/kurlykelly_server:latest
+
+  # deploy Job: CD 파트 (Blue-Green Deploy)
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      # (1) 현재 구동 중인 서버(blue / green) 확인 및 환경 변수 설정
+      - name: Set target IP
+        run: |
+          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.KURLYKELLY_SERVER_IP }}/env")
+          echo $STATUS
+          if [ $STATUS = 200 ]; then
+            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.KURLYKELLY_SERVER_IP }}/env")
+          else
+            CURRENT_UPSTREAM=green
+          fi
+          echo CURRENT_UPSTREAM=$CURRENT_UPSTREAM >> $GITHUB_ENV
+          # 1-2) 현재 프로필이 blue -> blue 서버(8080) 사용 중, green은 대기(8081)
+          #      현재 프로필이 green -> green 서버(8081) 사용 중, blue는 대기(8080)
+          if [ $CURRENT_UPSTREAM = blue ]; then
+            echo "CURRENT_PORT=8080" >> $GITHUB_ENV
+            echo "STOPPED_PORT=8081" >> $GITHUB_ENV
+            echo "TARGET_UPSTREAM=green" >> $GITHUB_ENV
+          else
+            echo "CURRENT_PORT=8081" >> $GITHUB_ENV
+            echo "STOPPED_PORT=8080" >> $GITHUB_ENV
+            echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
+          fi
+
+      # (2) SSH 액션으로 원격 서버에 접속하여 Docker 이미지를 pull & docker-compose 실행
+      - name: Docker compose
+        uses: yoonhyojin1016/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.KURLYKELLY_SERVER_IP }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/kurlykelly_server:latest
+            # TARGET_UPSTREAM(yml)에 맞게 compose 실행 
+            sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
+
+          # # (3) 새로 띄운 서버(대기 포트)에 /env 요청이 정상(200)인지 확인
+          # - name: Check deploy server URL
+          #   uses: jtalk/url-health-check-action@v3
+          #   with:
+          #     url: http://${{ secrets.kurlykelly_server_IP }}:${{env.STOPPED_PORT}}/env
+          #     max-attempts: 3
+          #     retry-delay: 10s
+
+      # (4) Nginx upstream 변경 (현재 blue->green 또는 green->blue로 스위칭)
+      - name: Change nginx upstream
+        uses: yoonhyojin1016/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.KURLYKELLY_SERVER_IP }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{ env.TARGET_UPSTREAM }};" > /etc/nginx/conf.d/service-env.inc && nginx -s reload'
+
+      # (5) 기존 서버(현재 Upstream) 컨테이너 중지 & 제거
+      - name: Stop current server
+        uses: yoonhyojin1016/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.KURLYKELLY_SERVER_IP }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            sudo docker stop ${{env.CURRENT_UPSTREAM}}
+            sudo docker rm ${{env.CURRENT_UPSTREAM}}
+
+      # (6) [추가] application-test.yml 프로파일 활성화 안내
+      #
+      # application-test.yml이 실제로 적용되지 않는 경우:
+      #   - 스프링 부트는 파일명 규칙에 따라 application-test.yml을 자동으로 인식하지만,
+      #     실제 실행 시 spring.profiles.active=test 프로파일을 활성화해야만 이 설정 파일이 적용됩니다.
+      #
+      #   - 만약 GitHub Actions, 로컬 등에서 테스트 시에 프로파일을 지정하지 않으면 (예: spring.profiles.active=test),
+      #     스프링은 application.yml (혹은 다른 기본 설정 파일)만 불러와서 MySQL 설정이 우선될 수 있습니다.
