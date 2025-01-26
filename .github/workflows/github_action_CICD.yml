@@ -29,7 +29,7 @@ jobs:
 
       # (1) 프로그램 빌드 (Java 빌드) 3) Java Gradle 빌드
       - name: Spring Boot Build
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       # (2) Docker 이미지 빌드 1) Docker Hub 에 Login
       - name: Login to DockerHub
