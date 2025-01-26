@@ -39,11 +39,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # (2) Docker 이미지 빌드 2) DockerFile 을 기반으로 Docker Image 빌드
-      - name: Build Docker
+      - name: docker image build
         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/kurlykelly_server .
 
       # (2) Docker 이미지 빌드 3) Docker Hub 에 빌드된 이미지 push
-      - name: Push Docker
+      - name: docker Hub push
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/kurlykelly_server:latest
 
   # deploy Job: CD 파트 (Blue-Green Deploy)
@@ -52,20 +52,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # (1) 현재 구동 중인 서버(blue / green) 확인 및 환경 변수 설정
-      - name: Set target IP
+      # CD: 배포 전, GitHub IP를 EC2 보안 그룹에 추가 (SSH 접근 허용)
+      - name: get GitHub IP
+        id: ip
+        uses: haythem/public-ip@v1.2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Add GitHub IP to AWS
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.AWS_SG_ID }} \
+            --protocol tcp --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          
+           # (2) 로컬에서 /env 호출 → CURRENT_UPSTREAM 파악 → GitHub Actions Env 설정
+      - name: Determine current upstream
         run: |
           STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.KURLYKELLY_SERVER_IP }}/env")
-          echo $STATUS
-          if [ $STATUS = 200 ]; then
+          echo "STATUS=$STATUS"
+
+          if [ "$STATUS" = "200" ]; then
             CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.KURLYKELLY_SERVER_IP }}/env")
           else
-            CURRENT_UPSTREAM=green
+            CURRENT_UPSTREAM="green"
           fi
-          echo CURRENT_UPSTREAM=$CURRENT_UPSTREAM >> $GITHUB_ENV
-          # 1-2) 현재 프로필이 blue -> blue 서버(8080) 사용 중, green은 대기(8081)
-          #      현재 프로필이 green -> green 서버(8081) 사용 중, blue는 대기(8080)
-          if [ $CURRENT_UPSTREAM = blue ]; then
+
+          echo "CURRENT_UPSTREAM=$CURRENT_UPSTREAM" >> $GITHUB_ENV
+
+          if [ "$CURRENT_UPSTREAM" = "blue" ]; then
             echo "CURRENT_PORT=8080" >> $GITHUB_ENV
             echo "STOPPED_PORT=8081" >> $GITHUB_ENV
             echo "TARGET_UPSTREAM=green" >> $GITHUB_ENV
@@ -75,55 +95,132 @@ jobs:
             echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
           fi
 
-      # (2) SSH 액션으로 원격 서버에 접속하여 Docker 이미지를 pull & docker-compose 실행
-      - name: Docker compose
+      # (3) SSH 액션: 새 프로필(blue or green) 컨테이너 띄우기
+      - name: Deploy new container
         uses: appleboy/ssh-action@master
         with:
-          username: ubuntu
           host: ${{ secrets.KURLYKELLY_SERVER_IP }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          username: ubuntu
+          password: ${{ secrets.EC2_PASSWORD }}  # 비밀번호 SSH 인증          port: 22
           script_stop: true
           script: |
+            echo "Pull latest image..."
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/kurlykelly_server:latest
-            # TARGET_UPSTREAM(yml)에 맞게 compose 실행 
-            sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
 
-          # # (3) 새로 띄운 서버(대기 포트)에 /env 요청이 정상(200)인지 확인
-          # - name: Check deploy server URL
-          #   uses: jtalk/url-health-check-action@v3
-          #   with:
-          #     url: http://${{ secrets.kurlykelly_server_IP }}:${{env.STOPPED_PORT}}/env
-          #     max-attempts: 3
-          #     retry-delay: 10s
+            echo "Run docker-compose for ${TARGET_UPSTREAM}..."
+            sudo docker-compose -f docker-compose-${TARGET_UPSTREAM}.yml up -d
 
-      # (4) Nginx upstream 변경 (현재 blue->green 또는 green->blue로 스위칭)
+            # (옵션) 새 컨테이너 헬스체크 로직 등 추가 가능
+
+      # (4) SSH 액션: Nginx Upstream 변경
       - name: Change nginx upstream
         uses: appleboy/ssh-action@master
         with:
-          username: ubuntu
           host: ${{ secrets.KURLYKELLY_SERVER_IP }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          username: ubuntu
+          password: ${{ secrets.EC2_PASSWORD }}  # 비밀번호 SSH 인증          port: 22
           script_stop: true
           script: |
-            sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{ env.TARGET_UPSTREAM }};" > /etc/nginx/conf.d/service-env.inc && nginx -s reload'
+            echo "Switching Nginx to ${TARGET_UPSTREAM}..."
+            sudo docker exec -i nginxserver bash -c 'echo "set \$service_url '${TARGET_UPSTREAM}';" > /etc/nginx/conf.d/service-env.inc && nginx -s reload'
 
-      # (5) 기존 서버(현재 Upstream) 컨테이너 중지 & 제거
+      # (5) 기존 서버 stop & remove
       - name: Stop current server
         uses: appleboy/ssh-action@master
         with:
-          username: ubuntu
           host: ${{ secrets.KURLYKELLY_SERVER_IP }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          username: ubuntu
+          password: ${{ secrets.EC2_PASSWORD }}  # 비밀번호 SSH 인증          port: 22
           script_stop: true
           script: |
-            sudo docker stop ${{env.CURRENT_UPSTREAM}}
-            sudo docker rm ${{env.CURRENT_UPSTREAM}}
+            echo "Stop old container: ${CURRENT_UPSTREAM}"
+            sudo docker stop ${CURRENT_UPSTREAM} || true
+            sudo docker rm ${CURRENT_UPSTREAM} || true
 
-      # (6) [추가] application-test.yml 프로파일 활성화 안내
-      #
-      # application-test.yml이 실제로 적용되지 않는 경우:
-      #   - 스프링 부트는 파일명 규칙에 따라 application-test.yml을 자동으로 인식하지만,
-      #     실제 실행 시 spring.profiles.active=test 프로파일을 활성화해야만 이 설정 파일이 적용됩니다.
-      #
-      #   - 만약 GitHub Actions, 로컬 등에서 테스트 시에 프로파일을 지정하지 않으면 (예: spring.profiles.active=test),
-      #     스프링은 application.yml (혹은 다른 기본 설정 파일)만 불러와서 MySQL 설정이 우선될 수 있습니다.
+      # (6) 배포 끝나면 보안 그룹에서 GitHub IP 제거
+      - name: Remove IP FROM security group
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.AWS_SG_ID }} \
+            --protocol tcp --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+#
+#      #  CD: SSH 접속 → Blue-Green 무중단 배포
+#      # (1) 현재 구동 중인 서버(blue / green) 확인 및 환경 변수 설정
+#      - name: AWS EC2 Connection (Blue-Green Deploy)
+#        uses: appleboy/ssh-action@v0.1.6
+#        with:
+#          host: ${{ secrets.KURLYKELLY_SERVER_IP }}
+#          username: ${{ secrets.EC2_USERNAME }}
+#          key: ${{ secrets.EC2_SSH_KEY }}
+#          port: ${{ secrets.EC2_SSH_PORT }}
+#          timeout: 60s
+#          script: |
+#            STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.KURLYKELLY_SERVER_IP }}/env")
+#            echo $STATUS
+#            if [ $STATUS = 200 ]; then
+#              CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.KURLYKELLY_SERVER_IP }}/env")
+#            else
+#              CURRENT_UPSTREAM=green  # 기본값
+#            fi
+#
+#            echo CURRENT_UPSTREAM=$CURRENT_UPSTREAM >> $GITHUB_ENV
+#
+#            # 1-2) 현재 프로필이 blue -> blue 서버(8080) 사용 중, green은 대기(8081)
+#            #      현재 프로필이 green -> green 서버(8081) 사용 중, blue는 대기(8080)
+#            if [ $CURRENT_UPSTREAM = blue ]; then
+#              echo "CURRENT_PORT=8080" >> $GITHUB_ENV
+#              echo "STOPPED_PORT=8081" >> $GITHUB_ENV
+#              echo "TARGET_UPSTREAM=green" >> $GITHUB_ENV
+#            else
+#              echo "CURRENT_PORT=8081" >> $GITHUB_ENV
+#              echo "STOPPED_PORT=8080" >> $GITHUB_ENV
+#              echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
+#            fi
+#
+#            echo "CURRENT_PORT=$CURRENT_PORT, STOPPED_PORT=$STOPPED_PORT, TARGET_UPSTREAM=$TARGET_UPSTREAM"
+#
+#
+#      # (2) SSH 액션으로 원격 서버에 접속하여 Docker 이미지를 pull & docker-compose 실행
+#      - name: Docker compose
+#        uses: appleboy/ssh-action@master
+#        with:
+#          username: ubuntu
+#          host: ${{ secrets.KURLYKELLY_SERVER_IP }}
+#          key: ${{ secrets.EC2_SSH_KEY }}
+#          script_stop: true
+#          script: |
+#            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/kurlykelly_server:latest
+#            # TARGET_UPSTREAM(yml)에 맞게 compose 실행
+#            sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
+#
+#          # # (3) 새로 띄운 서버(대기 포트)에 /env 요청이 정상(200)인지 확인
+#          # - name: Check deploy server URL
+#          #   uses: jtalk/url-health-check-action@v3
+#          #   with:
+#          #     url: http://${{ secrets.kurlykelly_server_IP }}:${{env.STOPPED_PORT}}/env
+#          #     max-attempts: 3
+#          #     retry-delay: 10s
+#
+#      # (4) Nginx upstream 변경 (현재 blue->green 또는 green->blue로 스위칭)
+#      - name: Change nginx upstream
+#        uses: appleboy/ssh-action@master
+#        with:
+#          username: ubuntu
+#          host: ${{ secrets.KURLYKELLY_SERVER_IP }}
+#          key: ${{ secrets.EC2_SSH_KEY }}
+#          script_stop: true
+#          script: |
+#            sudo docker exec -i nginxserver bash -c 'echo "set \$service_url ${{ env.TARGET_UPSTREAM }};" > /etc/nginx/conf.d/service-env.inc && nginx -s reload'
+#
+#      # (5) 기존 서버(현재 Upstream) 컨테이너 중지 & 제거
+#      - name: Stop current server
+#        uses: appleboy/ssh-action@master
+#        with:
+#          username: ubuntu
+#          host: ${{ secrets.KURLYKELLY_SERVER_IP }}
+#          key: ${{ secrets.EC2_SSH_KEY }}
+#          script_stop: true
+#          script: |
+#            sudo docker stop ${{env.CURRENT_UPSTREAM}}
+#            sudo docker rm ${{env.CURRENT_UPSTREAM}}
