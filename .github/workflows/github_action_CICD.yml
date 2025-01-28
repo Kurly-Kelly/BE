@@ -46,7 +46,7 @@ jobs:
 
       # (2) Docker 이미지 빌드 2) DockerFile 을 기반으로 Docker Image 빌드
       - name: docker image build
-        run: docker buildx build -t ${{ secrets.DOCKERHUB_USERNAME }}/kurlykelly_server .
+        run: docker buildx build -t ${{ secrets.DOCKERHUB_USERNAME }} .
 
       # (2) Docker 이미지 빌드 3) Docker Hub 에 빌드된 이미지 push
       - name: docker Hub push
