@@ -49,7 +49,7 @@ jobs:
 
       # (2) Docker 이미지 빌드 3) Docker Hub 에 빌드된 이미지 push
       - name: docker Hub push
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/kurlykelly_server:latest
+        run: docker push yoonhyojin1016/kurlykelly_server:latest
 
   # deploy Job: CD 파트 (Blue-Green Deploy)
   deploy:
