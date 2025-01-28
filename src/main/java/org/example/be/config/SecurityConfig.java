@@ -68,6 +68,9 @@ public class SecurityConfig {
             .requestMatchers("/search/**").permitAll()
             .requestMatchers("/payments/**").permitAll()
 
+            // 찜한 상품 API 접근 가능
+                .requestMatchers("/like/**").permitAll()
+
             // Swagger 문서 접근 가능
             .requestMatchers(
                 "/swagger-ui/**",

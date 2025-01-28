@@ -33,18 +33,19 @@ public class ProductRequestDto {
 
     public static Product of(ProductRequestDto productRequestDto) {
         return new Product(
-                null,
-                productRequestDto.getName(),
-                productRequestDto.getDescription(),
-                productRequestDto.getPrice(),
-                productRequestDto.getDelivery(),
-                productRequestDto.getQuantity(),
-                productRequestDto.getDiscount(),
-                productRequestDto.getDiscountstatus(),
-                productRequestDto.getProductStatus(),
-                productRequestDto.getMainCategory(),
-                productRequestDto.getSubCategory(),
-                null
+            null,
+            productRequestDto.getName(),
+            productRequestDto.getDescription(),
+            productRequestDto.getPrice(),
+            productRequestDto.getDelivery(),
+            productRequestDto.getQuantity(),
+            productRequestDto.getDiscount(),
+            productRequestDto.getDiscountstatus(),
+            ProductStatus.available,
+            productRequestDto.getMainCategory(),
+            productRequestDto.getSubCategory(),
+            null,
+            null
         );
     }
 }
