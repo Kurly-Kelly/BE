@@ -38,6 +38,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PW }}
 
+      - name: Print current directory and files
+        run: |
+          echo "Current directory: $GITHUB_WORKSPACE"
+          ls -al
+      
+
       # (2) Docker 이미지 빌드 2) DockerFile 을 기반으로 Docker Image 빌드
       - name: docker image build
         run: docker buildx build -t ${{ secrets.DOCKERHUB_USERNAME }}/kurlykelly_server .
